@@ -1,0 +1,81 @@
+.inspiration-calendar {
+    padding: 40px 5%;
+    background-color: var(--bg-color);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.month-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.month-tab {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s;
+}
+
+.month-tab:hover,
+.month-tab.active {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 150px);
+    gap: 16px;
+}
+
+.cal-card {
+    border-radius: 12px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.cal-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    display: flex;
+    align-items: flex-end;
+    padding: 12px;
+}
+
+.cal-overlay span {
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+}
+
+@media (max-width: 900px) {
+    .calendar-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 140px);
+    }
+}
+
+@media (max-width: 500px) {
+    .calendar-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(8, 120px);
+    }
+}
