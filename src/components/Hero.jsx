@@ -56,7 +56,7 @@ const Hero = () => {
   };
 
   const scrollToNextSection = () => {
-    const nextSection = document.getElementById('top-destinations');
+    const nextSection = document.getElementById('discover-section');
     if (nextSection) {
       nextSection.scrollIntoView({ behavior: 'smooth' });
     }

@@ -1,5 +1,5 @@
 .footer {
-    background-color: #0a0103;
+    background-color: var(--secondary-bg);
     padding: 60px 5% 30px;
     border-top: 1px solid var(--glass-border);
 }
@@ -23,7 +23,7 @@
 .logo-main {
     font-size: 20px;
     font-weight: 800;
-    color: white;
+    color: var(--text-primary);
 }
 
 .logo-sub {
@@ -41,7 +41,7 @@
 .footer-newsletter h4 {
     font-size: 14px;
     margin-bottom: 16px;
-    color: white;
+    color: var(--text-primary);
 }
 
 .footer-links ul {
@@ -55,10 +55,12 @@
 .footer-links a {
     font-size: 13px;
     color: var(--text-secondary);
+    transition: color 0.3s ease;
 }
 
 .footer-links a:hover {
     color: var(--accent-color);
+    opacity: 1;
 }
 
 .footer-newsletter {
@@ -76,9 +78,14 @@
     border-radius: 6px;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    color: white;
+    color: var(--text-primary);
     font-size: 13px;
     outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.newsletter-form input:focus {
+    border-color: var(--accent-color);
 }
 
 .newsletter-form button {
@@ -88,33 +95,74 @@
     border-radius: 6px;
     font-size: 13px;
     font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.newsletter-form button:hover {
+    background: var(--accent-hover);
+}
+
+/* Social Icons Section */
+.footer-social-section {
+    border-top: 1px solid var(--glass-border);
+    padding-top: 30px;
+    margin-bottom: 30px;
+}
+
+.social-title {
+    font-size: 14px;
+    color: var(--accent-red);
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.social-icons {
+    display: flex;
+    gap: 12px;
+}
+
+.social-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+    transform: translateY(-3px);
+    opacity: 1;
 }
 
 .footer-bottom {
     border-top: 1px solid var(--glass-border);
     padding-top: 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     font-size: 12px;
     color: var(--text-secondary);
 }
 
-.social-icons {
-    display: flex;
-    gap: 16px;
-}
-
-.social-icons span {
-    cursor: pointer;
-}
-
-.social-icons span:hover {
-    color: var(--accent-color);
-}
-
 @media (max-width: 768px) {
     .footer-top {
         flex-direction: column;
+    }
+
+    .social-icons {
+        flex-wrap: wrap;
+    }
+
+    .social-icon {
+        width: 40px;
+        height: 40px;
     }
 }

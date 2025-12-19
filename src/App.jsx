@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import Discover from './components/Discover';
 import TopDestinations from './components/TopDestinations';
 import Suggestions from './components/Suggestions';
 import Panorama from './components/Panorama';
@@ -18,6 +19,7 @@ function App() {
       <Header />
       <Hero />
       <main>
+        <Discover />
         <TopDestinations />
         <Suggestions />
         <Panorama />

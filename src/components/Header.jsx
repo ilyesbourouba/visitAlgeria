@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Header.css';
 import logo from '../assets/Visit-Alg-contour.png';
+import ThemeToggle from './ThemeToggle';
 
 const Header = () => {
   const [isHovered, setIsHovered] = useState(false);
@@ -42,6 +43,7 @@ const Header = () => {
 
         {/* Right Section - Icons */}
         <div className="header-right">
+          <ThemeToggle />
           <button className="header-icon" aria-label="Chatbot">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>

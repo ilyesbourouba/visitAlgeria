@@ -9,7 +9,7 @@
 }
 
 .header-solid {
-    background: rgba(18, 1, 5, 0.95);
+    background: var(--header-bg);
     backdrop-filter: blur(20px);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
