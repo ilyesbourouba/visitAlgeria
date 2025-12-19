@@ -1,0 +1,262 @@
+.events-page-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(18, 1, 5, 0.98);
+    backdrop-filter: blur(25px);
+    z-index: 2000;
+    overflow-y: auto;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] .events-page-overlay {
+    background: rgba(250, 248, 245, 0.98);
+}
+
+.events-page-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 40px;
+    position: relative;
+}
+
+.events-close-btn {
+    position: fixed;
+    top: 30px;
+    right: 40px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+}
+
+.events-close-btn:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+    transform: rotate(90deg) scale(1.1);
+}
+
+.events-header {
+    margin-bottom: 60px;
+}
+
+.events-header h1 {
+    font-size: 3rem;
+    margin-bottom: 40px;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.events-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.search-bar {
+    position: relative;
+    width: 100%;
+}
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 18px 20px 18px 55px;
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(227, 24, 55, 0.1);
+}
+
+.filter-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.filter-select {
+    padding: 15px 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.filter-select:focus {
+    border-color: var(--accent-color);
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.event-card-big {
+    background: var(--card-bg);
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.event-card-big:hover {
+    transform: translateY(-10px);
+    border-color: var(--accent-color);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.event-card-image {
+    position: relative;
+    height: 240px;
+}
+
+.event-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.event-card-overlay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.event-card-category {
+    background: var(--accent-color);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.event-card-info {
+    padding: 25px;
+}
+
+.event-card-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.event-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.event-card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.event-card-meta svg {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+}
+
+/* RTL */
+.rtl .events-close-btn {
+    right: auto;
+    left: 40px;
+}
+
+.rtl .search-icon {
+    left: auto;
+    right: 20px;
+}
+
+.rtl .search-bar input {
+    padding: 18px 55px 18px 20px;
+    text-align: right;
+}
+
+.rtl .event-card-overlay {
+    left: auto;
+    right: 20px;
+}
+
+.rtl .event-card-meta span {
+    flex-direction: row-reverse;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .events-page-content {
+        padding: 80px 20px;
+    }
+
+    .events-header h1 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+
+    .events-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-group {
+        grid-template-columns: 1fr;
+    }
+
+    .events-close-btn {
+        top: 20px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+    }
+
+    /* Limit to 3 cards on mobile */
+    .event-card-big:nth-child(n+4) {
+        display: none;
+    }
+
+    .event-card-image {
+        height: 180px;
+    }
+
+    .event-card-info h3 {
+        font-size: 1.2rem;
+    }
+}

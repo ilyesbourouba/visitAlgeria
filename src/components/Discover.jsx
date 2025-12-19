@@ -3,22 +3,23 @@ import './Discover.css';
 import galleryImage from '../assets/discover-gallery.png';
 import coupleImage from '../assets/discover-couple.png';
 import mountainImage from '../assets/discover-mountain.png';
+import { useLanguage } from '../contexts/LanguageContext';
+import { getTranslation } from '../translations/translations';
 
 const Discover = () => {
+  const { language } = useLanguage();
+  const t = (key) => getTranslation(language, key);
+
   return (
     <section className="discover" id="discover-section">
       <div className="discover-bento">
         {/* Top Row */}
         <div className="bento-top-row">
-          {/* Left: Title */}
+          {/* Left: Section Title */}
           <div className="bento-title-block">
-            <h2 className="bento-title">
-              Découvrir<br />
-              l'Algérie<br />
-              maintenant
-            </h2>
+            <h2>{t('discoverAlgeriaNow')}</h2>
           </div>
-
+          
           {/* Right: Gallery Card with 4 vertical strips */}
           <div className="bento-card bento-gallery-card">
             <div className="gallery-strips">
@@ -29,10 +30,11 @@ const Discover = () => {
             </div>
             <div className="bento-overlay"></div>
             <div className="bento-card-content">
-              <h3>Creator's Cut Algeria</h3>
+              <h3>{t('creatorsCut')}</h3>
             </div>
           </div>
         </div>
+
 
         {/* Bottom Row */}
         <div className="bento-bottom-row">
@@ -41,7 +43,7 @@ const Discover = () => {
             <div className="bento-image" style={{ backgroundImage: `url(${coupleImage})` }}></div>
             <div className="bento-overlay"></div>
             <div className="bento-card-content">
-              <h3>Découvrir l'automne algérien avec des experts locaux</h3>
+              <h3>{t('autumnDiscover')}</h3>
             </div>
           </div>
 
@@ -50,7 +52,7 @@ const Discover = () => {
             <div className="bento-image" style={{ backgroundImage: `url(${mountainImage})` }}></div>
             <div className="bento-overlay"></div>
             <div className="bento-card-content">
-              <h3>Voici les destinations les plus durables</h3>
+              <h3>{t('sustainableDestinations')}</h3>
             </div>
           </div>
         </div>
@@ -60,3 +62,4 @@ const Discover = () => {
 };
 
 export default Discover;
+

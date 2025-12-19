@@ -4,7 +4,7 @@
     border-radius: 50%;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    color: var(--text-primary);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;

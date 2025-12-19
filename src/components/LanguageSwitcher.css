@@ -1,0 +1,43 @@
+.language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.language-switcher:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+.language-switcher svg {
+    width: 16px;
+    height: 16px;
+}
+
+.lang-code {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Solid header state in light mode */
+[data-theme="light"] .header-solid .language-switcher {
+    color: var(--text-primary);
+    background: rgba(45, 31, 34, 0.08);
+    border-color: rgba(45, 31, 34, 0.15);
+}
+
+[data-theme="light"] .header-solid .language-switcher:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #ffffff;
+}

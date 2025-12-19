@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './TopDestinations.css';
+import { useLanguage } from '../contexts/LanguageContext';
+import { getTranslation } from '../translations/translations';
 
 const destinations = [
-  { id: 1, name: 'Alger', image: 'https://images.unsplash.com/photo-1596463059283-da212519369d?w=600&h=400&fit=crop' },
-  { id: 2, name: 'Constantine', image: 'https://images.unsplash.com/photo-1623156346149-d5ccd8b29818?w=600&h=400&fit=crop' },
+  { id: 1, name: 'Alger', image: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&h=400&fit=crop' },
+  { id: 2, name: 'Constantine', image: 'https://images.unsplash.com/photo-1565967511849-76a60a516170?w=600&h=400&fit=crop' },
   { id: 3, name: 'Oran', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop' },
   { id: 4, name: 'Tlemcen', image: 'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=600&h=400&fit=crop' },
   { id: 5, name: 'Béjaia', image: 'https://images.unsplash.com/photo-1507272931001-fc06c17e4f43?w=600&h=400&fit=crop' },
@@ -19,6 +21,8 @@ const TopDestinations = () => {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const { language } = useLanguage();
+  const t = (key) => getTranslation(language, key);
 
   const checkScrollButtons = () => {
     if (carouselRef.current) {
@@ -78,9 +82,9 @@ const TopDestinations = () => {
     <section className="top-destinations" id="top-destinations">
       <div className="destinations-header">
         <div className="destinations-title-area">
-          <h2 className="section-title">Top destinations</h2>
+          <h2 className="section-title">{t('topDestinations')}</h2>
           <a href="#" className="destinations-link">
-            En savoir plus
+            {t('learnMore')}
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
@@ -92,7 +96,7 @@ const TopDestinations = () => {
             className={`nav-arrow ${!canScrollLeft ? 'disabled' : ''}`}
             onClick={() => scrollByAmount(-1)}
             disabled={!canScrollLeft}
-            aria-label="Previous"
+            aria-label={t('previous')}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6"></polyline>
@@ -102,7 +106,7 @@ const TopDestinations = () => {
             className={`nav-arrow ${!canScrollRight ? 'disabled' : ''}`}
             onClick={() => scrollByAmount(1)}
             disabled={!canScrollRight}
-            aria-label="Next"
+            aria-label={t('next')}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 18 15 12 9 6"></polyline>

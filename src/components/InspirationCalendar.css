@@ -69,13 +69,45 @@
 @media (max-width: 900px) {
     .calendar-grid {
         grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(4, 140px);
+        grid-template-rows: repeat(2, 140px);
+    }
+
+    /* Hide cards beyond 4 on tablet */
+    .cal-card:nth-child(n+5) {
+        display: none;
+    }
+
+    .month-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
     }
 }
 
 @media (max-width: 500px) {
     .calendar-grid {
         grid-template-columns: 1fr;
-        grid-template-rows: repeat(8, 120px);
+        grid-template-rows: repeat(3, 120px);
+    }
+
+    /* Hide cards beyond 3 on mobile */
+    .cal-card:nth-child(n+4) {
+        display: none;
+    }
+
+    .calendar-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .month-tabs {
+        width: 100%;
+        gap: 6px;
+    }
+
+    .month-tab {
+        flex-shrink: 0;
+        padding: 6px 12px;
+        font-size: 12px;
     }
 }

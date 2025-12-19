@@ -42,6 +42,15 @@
     z-index: 1;
 }
 
+/* Light mode hero overlay - lighter gradient */
+[data-theme="light"] .hero-overlay {
+    background: linear-gradient(to bottom,
+            rgba(18, 1, 5, 0.3) 0%,
+            rgba(18, 1, 5, 0.1) 40%,
+            rgba(250, 248, 245, 0.4) 80%,
+            var(--bg-color) 100%);
+}
+
 /* Hero Content */
 .hero-content {
     position: absolute;
@@ -403,28 +412,47 @@
         min-height: 500px;
     }
 
+    /* Compact category bar for mobile */
     .hero-carousel-controls {
-        width: calc(100% - 40px);
-        max-width: 100%;
-        overflow-x: auto;
-        scrollbar-width: none;
-    }
-
-    .hero-carousel-controls::-webkit-scrollbar {
-        display: none;
+        width: calc(100% - 32px);
+        bottom: 70px;
+        padding: 6px 12px;
+        gap: 8px;
     }
 
     .carousel-categories {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .carousel-categories::-webkit-scrollbar {
+        display: none;
     }
 
     .carousel-category {
         padding: 6px 10px;
-        font-size: 12px;
+        font-size: 11px;
+        flex-shrink: 0;
     }
 
+    .carousel-nav-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    .carousel-grid-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    /* Hide progress bar on mobile */
     .hero-progress-bar {
-        width: calc(100% - 40px);
+        display: none;
+    }
+
+    .hero-scroll-down {
+        bottom: 20px;
     }
 
     .grid-items {
@@ -436,6 +464,7 @@
         font-size: 1.5rem;
     }
 }
+
 
 @media (max-width: 480px) {
     .grid-items {

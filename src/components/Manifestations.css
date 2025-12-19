@@ -24,6 +24,27 @@
     letter-spacing: -0.02em;
 }
 
+.show-all-link-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 10px 0;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.show-all-link-btn:hover {
+    gap: 20px;
+    border-color: var(--accent-color);
+}
+
 .show-all-link {
     display: inline-flex;
     align-items: center;
@@ -57,7 +78,21 @@
     .events-grid {
         grid-template-columns: 1fr;
     }
+
+    /* Limit to 3 cards on mobile */
+    .event-card:nth-child(n+4) {
+        display: none;
+    }
+
+    .manifestations .section-title {
+        font-size: 2rem;
+    }
+
+    .manifestations {
+        padding: 60px 5%;
+    }
 }
+
 
 /* Event Card */
 .event-card {

@@ -16,21 +16,23 @@
     display: grid;
     grid-template-columns: 30fr 70fr;
     gap: 32px;
-    align-items: start;
+    align-items: stretch;
 }
 
 .bento-title-block {
+    display: flex;
+    align-items: flex-start;
     padding-top: 20px;
 }
 
-.bento-title {
-    font-size: 3.25rem;
+.bento-title-block h2 {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
     font-weight: 700;
     color: var(--text-primary);
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-    max-width: 280px;
+    line-height: 1.1;
+    margin: 0;
 }
+
 
 /* Bottom Row - Two Cards (65/35 split) */
 .bento-bottom-row {
@@ -143,12 +145,9 @@
     }
 
     .bento-top-row {
-        grid-template-columns: 35fr 65fr;
+        grid-template-columns: 1fr;
     }
 
-    .bento-title {
-        font-size: 2.5rem;
-    }
 
     .bento-gallery-card {
         height: 280px;
