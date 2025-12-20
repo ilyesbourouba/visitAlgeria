@@ -93,7 +93,7 @@ function App() {
       <Hero />
       <main>
         <Discover />
-        <TopDestinations />
+        <TopDestinations onOpenDestinations={handleOpenDestinations} />
         <Suggestions />
         <Manifestations 
           onViewAll={handleOpenEvents}

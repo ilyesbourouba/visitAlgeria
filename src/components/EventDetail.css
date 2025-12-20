@@ -11,6 +11,35 @@
     background: #faf8f5;
 }
 
+/* Light mode: Back button - make it look like a button */
+[data-theme="light"] .back-btn {
+    background: #f0ebe6;
+    border: 1px solid #d0c8c9;
+    border-radius: 8px;
+    padding: 10px 16px;
+    color: var(--accent-color);
+}
+
+[data-theme="light"] .back-btn:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #ffffff;
+}
+
+/* Light mode: Sidebar cards with visible background */
+[data-theme="light"] .sidebar-card {
+    background: #ffffff;
+    border: 1px solid #d0c8c9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Light mode: Check button */
+[data-theme="light"] .check-btn {
+    background: #f0ebe6;
+    border-color: #d0c8c9;
+    color: var(--text-primary);
+}
+
 .event-detail-content {
     max-width: 1100px;
     margin: 0 auto;

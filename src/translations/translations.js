@@ -31,6 +31,15 @@ export const translations = {
     // Top Destinations
     topDestinations: 'Top Destinations',
     allDestinations: 'All Destinations',
+    // City Names
+    cityAlger: 'Alger',
+    cityConstantine: 'Constantine',
+    cityOran: 'Oran',
+    cityTlemcen: 'Tlemcen',
+    cityBejaia: 'Béjaia',
+    cityGhardaia: 'Ghardaïa',
+    cityAnnaba: 'Annaba',
+    cityTamanrasset: 'Tamanrasset',
     
     // Suggestions
     ourSuggestions: 'Our Suggestions',
@@ -250,6 +259,15 @@ export const translations = {
     // Top Destinations
     topDestinations: 'أفضل الوجهات',
     allDestinations: 'جميع الوجهات',
+    // City Names
+    cityAlger: 'الجزائر العاصمة',
+    cityConstantine: 'قسنطينة',
+    cityOran: 'وهران',
+    cityTlemcen: 'تلمسان',
+    cityBejaia: 'بجاية',
+    cityGhardaia: 'غرداية',
+    cityAnnaba: 'عنابة',
+    cityTamanrasset: 'تمنراست',
     
     // Suggestions
     ourSuggestions: 'اقتراحاتنا',

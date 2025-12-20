@@ -61,6 +61,13 @@
     z-index: 10;
 }
 
+/* RTL/Arabic: ensure content stays centered */
+[dir="rtl"] .hero-content {
+    left: auto;
+    right: 50%;
+    transform: translate(50%, -50%);
+}
+
 .hero-title {
     font-size: clamp(2.5rem, 6vw, 5rem);
     font-weight: 800;
