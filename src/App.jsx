@@ -15,13 +15,16 @@ import EventDetail from './components/EventDetail';
 import DiscoverPage from './components/DiscoverPage';
 import CategoryPage from './components/CategoryPage';
 import CategoryDetail from './components/CategoryDetail';
+import DestinationPage from './components/DestinationPage';
 import './App.css';
 
 function App() {
   const [showInfo, setShowInfo] = useState(false);
   const [showEvents, setShowEvents] = useState(false);
   const [showDiscover, setShowDiscover] = useState(false);
+  const [showDestinations, setShowDestinations] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedWilaya, setSelectedWilaya] = useState(null);
   
   // Category page state
   const [showCategory, setShowCategory] = useState(false);
@@ -53,14 +56,24 @@ function App() {
     setSelectedEvent(null);
   };
 
+  const handleOpenDestinations = () => {
+    setShowDestinations(true);
+    setShowInfo(false);
+    setShowEvents(false);
+    setShowDiscover(false);
+    setSelectedEvent(null);
+  };
+
   const handleCloseAll = () => {
     setShowInfo(false);
     setShowEvents(false);
     setShowDiscover(false);
+    setShowDestinations(false);
     setShowCategory(false);
     setSelectedEvent(null);
     setSelectedCategory(null);
     setSelectedCategoryItem(null);
+    setSelectedWilaya(null);
   };
 
   const handleCloseCategoryPage = () => {
@@ -75,6 +88,7 @@ function App() {
         onInfoClick={handleOpenInfo} 
         onEventsClick={handleOpenEvents}
         onDiscoverClick={handleOpenDiscover}
+        onDestinationsClick={handleOpenDestinations}
       />
       <Hero />
       <main>
@@ -127,6 +141,13 @@ function App() {
           item={selectedCategoryItem}
           category={selectedCategory}
           onClose={() => setSelectedCategoryItem(null)}
+        />
+      )}
+
+      {showDestinations && (
+        <DestinationPage 
+          onClose={handleCloseAll}
+          onSelectWilaya={setSelectedWilaya}
         />
       )}
     </div>

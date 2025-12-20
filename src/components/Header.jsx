@@ -6,7 +6,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
 
-const Header = ({ onInfoClick, onEventsClick, onDiscoverClick }) => {
+const Header = ({ onInfoClick, onEventsClick, onDiscoverClick, onDestinationsClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -43,7 +43,7 @@ const Header = ({ onInfoClick, onEventsClick, onDiscoverClick }) => {
             <img src={logo} alt="Visit Algeria" />
           </a>
           <nav className="header-nav">
-            <a href="#destinations" className="nav-link">{t('destinations')}</a>
+            <button className="nav-link" onClick={onDestinationsClick} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>{t('destinations')}</button>
             <button className="nav-link" onClick={onDiscoverClick} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
               {t('discover')}
             </button>
@@ -86,7 +86,7 @@ const Header = ({ onInfoClick, onEventsClick, onDiscoverClick }) => {
 
       {/* Mobile Navigation */}
       <nav className={`mobile-nav ${mobileMenuOpen ? 'open' : ''}`}>
-        <a href="#destinations" className="mobile-nav-link" onClick={() => handleMobileNavClick()}>{t('destinations')}</a>
+        <button className="mobile-nav-link" onClick={() => handleMobileNavClick(onDestinationsClick)}>{t('destinations')}</button>
         <button className="mobile-nav-link" onClick={() => handleMobileNavClick(onDiscoverClick)}>
           {t('discover')}
         </button>

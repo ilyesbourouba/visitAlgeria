@@ -191,6 +191,32 @@ export const translations = {
     filterByType: 'Filter by Type',
     allTypes: 'All Types',
     backToHome: 'Back to Home',
+
+    // Destination Page
+    wilayasOfAlgeria: 'Wilayas of Algeria',
+    searchWilaya: 'Search wilaya...',
+    algeriaMapsTitle: 'Algeria Provinces Map',
+    viewDetails: 'View Details',
+    wilaya: 'Wilaya',
+    backToMap: 'Back to Map',
+
+    // Wilaya Detail Page
+    about: 'About',
+    quickFacts: 'Quick Facts',
+    population: 'Population',
+    area: 'Area',
+    climate: 'Climate',
+    topPlacesToVisit: 'Top Places to Visit',
+    photoGallery: 'Photo Gallery',
+    travelTips: 'Travel Tips',
+    bestTimeToVisit: 'Best Time to Visit',
+    bestTimeDesc: 'Spring (March-May) and Autumn (September-November) offer the most pleasant weather.',
+    localCuisine: 'Local Cuisine',
+    localCuisineDesc: "Don't miss the traditional couscous, tajine, and local pastries.",
+    culturalEtiquette: 'Cultural Etiquette',
+    culturalEtiquetteDesc: 'Respect local customs and dress modestly when visiting religious sites.',
+    gettingAround: 'Getting Around',
+    gettingAroundDesc: 'Taxis and local buses are available. Consider hiring a guide for remote areas.',
   },
   ar: {
     // Header Navigation
@@ -384,6 +410,32 @@ export const translations = {
     filterByType: 'تصفية حسب النوع',
     allTypes: 'جميع الأنواع',
     backToHome: 'العودة للرئيسية',
+
+    // Destination Page
+    wilayasOfAlgeria: 'ولايات الجزائر',
+    searchWilaya: 'ابحث عن ولاية...',
+    algeriaMapsTitle: 'خريطة ولايات الجزائر',
+    viewDetails: 'عرض التفاصيل',
+    wilaya: 'ولاية',
+    backToMap: 'العودة للخريطة',
+
+    // Wilaya Detail Page
+    aboutWilaya: 'حول',
+    quickFacts: 'حقائق سريعة',
+    population: 'السكان',
+    area: 'المساحة',
+    climate: 'المناخ',
+    topPlacesToVisit: 'أفضل الأماكن للزيارة',
+    photoGallery: 'معرض الصور',
+    travelTips: 'نصائح السفر',
+    bestTimeToVisit: 'أفضل وقت للزيارة',
+    bestTimeDesc: 'الربيع (مارس-ماي) والخريف (سبتمبر-نوفمبر) يوفران أفضل الأجواء.',
+    localCuisine: 'المطبخ المحلي',
+    localCuisineDesc: 'لا تفوت الكسكس التقليدي والطاجين والحلويات المحلية.',
+    culturalEtiquette: 'الآداب الثقافية',
+    culturalEtiquetteDesc: 'احترم العادات المحلية وارتدِ ملابس محتشمة عند زيارة المواقع الدينية.',
+    gettingAround: 'التنقل',
+    gettingAroundDesc: 'سيارات الأجرة والحافلات المحلية متاحة. فكر في استئجار مرشد للمناطق النائية.',
   }
 };
 
