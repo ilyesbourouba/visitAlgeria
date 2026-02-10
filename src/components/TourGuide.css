@@ -1,0 +1,467 @@
+/* ==================== */
+/* TOUR GUIDE PAGE      */
+/* Full-page overlay    */
+/* ==================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap");
+
+/* --- OVERLAY --- */
+.tour-guide-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  overflow-y: auto;
+  background-color: var(--tg-bg, #080808);
+  color: var(--tg-text, #eaeaea);
+  animation: tgPageSlideIn 0.5s ease-out;
+}
+
+@keyframes tgPageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tour-guide-page-content {
+  --tg-bg: #080808;
+  --tg-accent: #d4af37;
+  --tg-text: #eaeaea;
+  --tg-muted: #a0a0a0;
+  --tg-border: rgba(255, 255, 255, 0.1);
+}
+
+/* --- CLOSE BUTTON --- */
+.tg-close-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1100;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.tg-close-btn svg {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}
+
+.tg-close-btn:hover {
+  background: var(--tg-accent);
+  border-color: var(--tg-accent);
+  transform: rotate(90deg);
+}
+
+[dir="rtl"] .tg-close-btn {
+  right: auto;
+  left: 24px;
+}
+
+/* --- HERO SECTION --- */
+.tg-page-hero {
+  position: relative;
+  height: 70vh;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.tg-page-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('https://images.unsplash.com/photo-1587974928442-77dc3e0dba72?auto=format&fit=crop&q=80&w=1600') center / cover no-repeat;
+  filter: brightness(0.3) saturate(0.8);
+  transform: scale(1.05);
+}
+
+.tg-page-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to top, var(--tg-bg, #080808), transparent);
+  z-index: 1;
+}
+
+.tg-page-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: 0 5%;
+}
+
+.tg-badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--tg-accent);
+  border: 1px solid var(--tg-accent);
+  padding: 8px 24px;
+  border-radius: 50px;
+  margin-bottom: 24px;
+}
+
+.tg-page-title {
+  font-family: "Cinzel", serif;
+  font-size: 4rem;
+  line-height: 1.1;
+  margin: 0 0 20px;
+  background: linear-gradient(to right, #fff, #bbb);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tg-page-subtitle {
+  font-size: 1.2rem;
+  color: var(--tg-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* --- LOCATIONS --- */
+.tg-locations-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 0 100px;
+}
+
+.tg-location-article {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 60vh;
+  margin: 0 0 80px;
+  padding: 0 40px;
+  gap: 60px;
+}
+
+.tg-location-article:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+.tg-loc-text {
+  flex: 1;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 1s ease-out;
+}
+
+.tg-loc-text.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tg-loc-number {
+  font-family: "Cinzel", serif;
+  font-size: 5rem;
+  color: rgba(255, 255, 255, 0.04);
+  line-height: 1;
+  margin-bottom: -20px;
+  display: block;
+}
+
+.tg-loc-text h3 {
+  font-family: "Cinzel", serif;
+  font-size: 2.2rem;
+  margin: 0 0 20px;
+  color: var(--tg-accent);
+}
+
+.tg-tags {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.tg-tag {
+  font-size: 0.7rem;
+  padding: 5px 14px;
+  border: 1px solid var(--tg-border);
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #ccc;
+}
+
+.tg-loc-text p {
+  font-size: 1.05rem;
+  color: var(--tg-muted);
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+.tg-explore-link {
+  background: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+  font-weight: 500;
+  font-size: 1rem;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 0;
+}
+
+.tg-explore-link:hover {
+  gap: 22px;
+  color: var(--tg-accent);
+}
+
+/* Image */
+.tg-loc-image-wrapper {
+  flex: 1.2;
+  height: 450px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.tg-loc-image-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: -20px;
+  bottom: -20px;
+  border: 1px solid var(--tg-border);
+  z-index: 0;
+  transition: all 0.5s ease;
+}
+
+.tg-location-article:hover .tg-loc-image-wrapper::after {
+  transform: translate(-12px, -12px);
+  border-color: var(--tg-accent);
+}
+
+.tg-loc-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+  filter: grayscale(40%);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1.2s cubic-bezier(0.77, 0, 0.175, 1),
+    filter 0.5s,
+    transform 0.5s;
+}
+
+.tg-loc-image.visible {
+  clip-path: inset(0 0 0 0);
+}
+
+.tg-location-article:hover .tg-loc-image {
+  filter: grayscale(0%);
+  transform: scale(1.05);
+}
+
+/* --- MODAL --- */
+.tg-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: tgBlurFade 0.5s forwards;
+  padding: 40px;
+}
+
+@keyframes tgBlurFade {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+
+  to {
+    opacity: 1;
+    backdrop-filter: blur(20px);
+  }
+}
+
+.tg-modal-content {
+  width: 100%;
+  max-width: 1200px;
+  height: 80vh;
+  background: #000;
+  position: relative;
+  border: 1px solid var(--tg-accent, #d4af37);
+  box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
+}
+
+.tg-modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2.5rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.tg-modal-close:hover {
+  color: var(--tg-accent, #d4af37);
+}
+
+/* --- LIGHT THEME --- */
+[data-theme="light"] .tour-guide-page-content {
+  --tg-bg: #f5f3ef;
+  --tg-text: #1a1a2e;
+  --tg-muted: #5a6677;
+  --tg-border: rgba(0, 0, 0, 0.1);
+  --tg-accent: #b8941f;
+}
+
+[data-theme="light"] .tour-guide-overlay {
+  background-color: #f5f3ef;
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .tg-close-btn {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .tg-close-btn svg {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .tg-page-title {
+  background: linear-gradient(to right, #1a1a2e, #444);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .tg-loc-number {
+  color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .tg-tag {
+  color: #555;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .tg-explore-link {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .tg-explore-link:hover {
+  color: var(--tg-accent);
+}
+
+[data-theme="light"] .tg-loc-image {
+  filter: grayscale(20%);
+}
+
+[data-theme="light"] .tg-page-hero::after {
+  background: linear-gradient(to top, #f5f3ef, transparent);
+}
+
+/* --- RTL --- */
+[dir="rtl"] .tg-loc-text h3 {
+  font-family: inherit;
+  text-align: right;
+}
+
+[dir="rtl"] .tg-loc-text p {
+  text-align: right;
+}
+
+[dir="rtl"] .tg-tags {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .tg-loc-number {
+  text-align: right;
+}
+
+[dir="rtl"] .tg-location-article:nth-child(even) {
+  flex-direction: row;
+}
+
+[dir="rtl"] .tg-location-article {
+  flex-direction: row-reverse;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+  .tg-location-article {
+    flex-direction: column !important;
+    padding: 0 20px;
+    min-height: auto;
+    gap: 30px;
+    margin-bottom: 60px;
+  }
+
+  .tg-page-title {
+    font-size: 2.5rem;
+  }
+
+  .tg-page-hero {
+    height: 50vh;
+    min-height: 350px;
+  }
+
+  .tg-loc-image-wrapper {
+    width: 100%;
+    height: 300px;
+  }
+
+  .tg-loc-text h3 {
+    font-size: 1.7rem;
+  }
+
+  .tg-loc-number {
+    font-size: 3.5rem;
+  }
+
+  .tg-modal-overlay {
+    padding: 10px;
+  }
+
+  .tg-modal-content {
+    height: 60vh;
+  }
+
+  .tg-locations-container {
+    padding: 40px 0 60px;
+  }
+}

@@ -1,0 +1,429 @@
+import { useState, useEffect, useCallback } from 'react';
+import api from '../api';
+
+const API_BASE = 'http://localhost:5000';
+
+/**
+ * Generic CRUD page with:
+ *  - File upload for image/video fields
+ *  - Search filtering
+ *  - Pagination
+ *  - Media preview in modals
+ */
+const CrudPage = ({ title, endpoint, columns, formFields }) => {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [formData, setFormData] = useState({});
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState({});
+
+  // Search & Pagination
+  const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Media preview modal
+  const [previewMedia, setPreviewMedia] = useState(null);
+
+  const fetchItems = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await api.get(endpoint);
+      setItems(res.data);
+    } catch (err) {
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [endpoint]);
+
+  useEffect(() => { fetchItems(); }, [fetchItems]);
+
+  // Reset to page 1 when search changes
+  useEffect(() => { setCurrentPage(1); }, [search]);
+
+  // --- Filtering & Pagination ---
+  const filteredItems = items.filter(item => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return columns.some(col => {
+      const val = item[col.key];
+      if (val === null || val === undefined) return false;
+      return String(val).toLowerCase().includes(q);
+    });
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIdx = (safeCurrentPage - 1) * pageSize;
+  const paginatedItems = filteredItems.slice(startIdx, startIdx + pageSize);
+
+  // --- CRUD actions ---
+  const openCreate = () => {
+    setEditingItem(null);
+    const initial = {};
+    formFields.forEach(f => {
+      if (f.type === 'boolean') initial[f.key] = true;
+      else if (f.type === 'number') initial[f.key] = 0;
+      else initial[f.key] = '';
+    });
+    setFormData(initial);
+    setShowModal(true);
+  };
+
+  const openEdit = (item) => {
+    setEditingItem(item);
+    const data = {};
+    formFields.forEach(f => {
+      data[f.key] = item[f.key] ?? '';
+    });
+    setFormData(data);
+    setShowModal(true);
+  };
+
+  const handleChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      if (editingItem) {
+        await api.put(`${endpoint}/${editingItem.id}`, formData);
+      } else {
+        await api.post(endpoint, formData);
+      }
+      setShowModal(false);
+      fetchItems();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Save failed');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    try {
+      await api.delete(`${endpoint}/${id}`);
+      fetchItems();
+    } catch (err) {
+      alert('Delete failed');
+    }
+  };
+
+  // --- File upload ---
+  const handleFileUpload = async (fieldKey, file, folder) => {
+    if (!file) return;
+    setUploading(prev => ({ ...prev, [fieldKey]: true }));
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await api.post(`/upload?folder=${folder || 'general'}`, fd, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      handleChange(fieldKey, res.data.url);
+    } catch (err) {
+      alert('Upload failed: ' + (err.response?.data?.error || err.message));
+    } finally {
+      setUploading(prev => ({ ...prev, [fieldKey]: false }));
+    }
+  };
+
+  // --- Helpers ---
+  const getFullUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return `${API_BASE}${url}`;
+  };
+
+  const isVideo = (url) => {
+    if (!url) return false;
+    return /\.(mp4|webm|mov|avi|ogg)(\?|$)/i.test(url);
+  };
+
+  // --- Renderers ---
+  const renderCellValue = (item, col) => {
+    const val = item[col.key];
+    if (col.type === 'boolean') return val ? '✅' : '❌';
+    if ((col.type === 'image') && val) {
+      return <img src={getFullUrl(val)} alt="" className="table-thumb" onClick={() => setPreviewMedia({ url: getFullUrl(val), type: 'image' })} style={{ cursor: 'pointer' }} />;
+    }
+    if ((col.type === 'video') && val) {
+      return (
+        <button className="btn btn-sm btn-preview" onClick={() => setPreviewMedia({ url: getFullUrl(val), type: 'video' })}>
+          ▶ Preview
+        </button>
+      );
+    }
+    if (val === null || val === undefined) return '—';
+    if (typeof val === 'string' && val.length > 60) return val.substring(0, 60) + '…';
+    return String(val);
+  };
+
+  const renderField = (field) => {
+    const val = formData[field.key] ?? '';
+
+    if (field.type === 'boolean') {
+      return (
+        <label className="toggle-label">
+          <input
+            type="checkbox"
+            checked={!!val}
+            onChange={e => handleChange(field.key, e.target.checked)}
+          />
+          <span>{val ? 'Active' : 'Inactive'}</span>
+        </label>
+      );
+    }
+
+    if (field.type === 'textarea') {
+      return (
+        <textarea
+          value={val}
+          onChange={e => handleChange(field.key, e.target.value)}
+          rows={3}
+          placeholder={field.label}
+        />
+      );
+    }
+
+    if (field.type === 'select') {
+      return (
+        <select
+          value={val}
+          onChange={e => handleChange(field.key, e.target.value)}
+        >
+          <option value="">Select...</option>
+          {(field.options || []).map(opt => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+        </select>
+      );
+    }
+
+    if (field.type === 'number') {
+      return (
+        <input
+          type="number"
+          value={val}
+          onChange={e => handleChange(field.key, Number(e.target.value))}
+          placeholder={field.label}
+        />
+      );
+    }
+
+    // IMAGE upload
+    if (field.type === 'image') {
+      return (
+        <div className="upload-field">
+          {val && (
+            <div className="upload-preview" onClick={() => setPreviewMedia({ url: getFullUrl(val), type: 'image' })}>
+              <img src={getFullUrl(val)} alt="Preview" />
+              <span className="preview-hint">Click to enlarge</span>
+            </div>
+          )}
+          <div className="upload-controls">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={e => handleFileUpload(field.key, e.target.files[0], field.folder || endpoint.replace('/', ''))}
+            />
+            {uploading[field.key] && <span className="upload-spinner">Uploading...</span>}
+          </div>
+        </div>
+      );
+    }
+
+    // VIDEO upload
+    if (field.type === 'video') {
+      return (
+        <div className="upload-field">
+          {val && (
+            <div className="upload-preview">
+              <video src={getFullUrl(val)} controls style={{ maxWidth: '100%', maxHeight: '180px', borderRadius: '8px' }} />
+              <span className="preview-hint" onClick={() => setPreviewMedia({ url: getFullUrl(val), type: 'video' })}>Click to enlarge</span>
+            </div>
+          )}
+          <div className="upload-controls">
+            <input
+              type="file"
+              accept="video/*"
+              onChange={e => handleFileUpload(field.key, e.target.files[0], field.folder || endpoint.replace('/', ''))}
+            />
+            {uploading[field.key] && <span className="upload-spinner">Uploading...</span>}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <input
+        type={field.type || 'text'}
+        value={val}
+        onChange={e => handleChange(field.key, e.target.value)}
+        placeholder={field.label}
+      />
+    );
+  };
+
+  return (
+    <div className="crud-page">
+      <div className="crud-header">
+        <h1>{title}</h1>
+        <button className="btn btn-primary" onClick={openCreate}>+ Add New</button>
+      </div>
+
+      {/* Search & Page Size */}
+      <div className="table-controls">
+        <div className="table-search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          {search && (
+            <button className="search-clear" onClick={() => setSearch('')}>×</button>
+          )}
+        </div>
+        <select className="page-size-select" value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}>
+          <option value={10}>10 / page</option>
+          <option value={25}>25 / page</option>
+          <option value={50}>50 / page</option>
+        </select>
+      </div>
+
+      {loading ? (
+        <div className="loading">Loading...</div>
+      ) : filteredItems.length === 0 ? (
+        <div className="empty-state">{search ? 'No matching items found.' : 'No items found. Click "Add New" to create one.'}</div>
+      ) : (
+        <>
+          <div className="table-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  {columns.map(col => (
+                    <th key={col.key}>{col.label}</th>
+                  ))}
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedItems.map((item, i) => (
+                  <tr key={item.id}>
+                    <td>{startIdx + i + 1}</td>
+                    {columns.map(col => (
+                      <td key={col.key}>{renderCellValue(item, col)}</td>
+                    ))}
+                    <td className="actions-cell">
+                      <button className="btn btn-sm btn-edit" onClick={() => openEdit(item)}>Edit</button>
+                      <button className="btn btn-sm btn-delete" onClick={() => handleDelete(item.id)}>Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="pagination">
+            <span className="pagination-info">
+              Showing {startIdx + 1}–{Math.min(startIdx + pageSize, filteredItems.length)} of {filteredItems.length}
+            </span>
+            <div className="pagination-controls">
+              <button
+                className="btn btn-sm"
+                disabled={safeCurrentPage <= 1}
+                onClick={() => setCurrentPage(p => p - 1)}
+              >
+                ← Prev
+              </button>
+              {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                let page;
+                if (totalPages <= 7) {
+                  page = i + 1;
+                } else if (safeCurrentPage <= 4) {
+                  page = i + 1;
+                } else if (safeCurrentPage >= totalPages - 3) {
+                  page = totalPages - 6 + i;
+                } else {
+                  page = safeCurrentPage - 3 + i;
+                }
+                return (
+                  <button
+                    key={page}
+                    className={`btn btn-sm ${page === safeCurrentPage ? 'btn-primary' : ''}`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+              <button
+                className="btn btn-sm"
+                disabled={safeCurrentPage >= totalPages}
+                onClick={() => setCurrentPage(p => p + 1)}
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Create/Edit Modal */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{editingItem ? 'Edit' : 'Create'} {title.replace(/s$/, '')}</h2>
+              <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="modal-body">
+                {formFields.map(field => (
+                  <div className="form-group" key={field.key}>
+                    <label>{field.label}</label>
+                    {renderField(field)}
+                  </div>
+                ))}
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={saving}>
+                  {saving ? 'Saving...' : editingItem ? 'Update' : 'Create'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Media Preview Modal */}
+      {previewMedia && (
+        <div className="modal-overlay preview-overlay" onClick={() => setPreviewMedia(null)}>
+          <div className="preview-modal" onClick={e => e.stopPropagation()}>
+            <button className="modal-close preview-close" onClick={() => setPreviewMedia(null)}>×</button>
+            {previewMedia.type === 'video' ? (
+              <video src={previewMedia.url} controls autoPlay style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: '12px' }} />
+            ) : (
+              <img src={previewMedia.url} alt="Preview" style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: '12px' }} />
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CrudPage;

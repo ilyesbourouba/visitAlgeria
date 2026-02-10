@@ -1,14 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Discover.css';
 import galleryImage from '../assets/discover-gallery.png';
 import coupleImage from '../assets/discover-couple.png';
 import mountainImage from '../assets/discover-mountain.png';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
+import { fetchAPI, localize, mediaUrl } from '../services/api';
+
+const fallbackCards = [
+  { id: 'gallery', title_key: 'creatorsCut', image: galleryImage, card_size: 'title' },
+  { id: 'couple', title_key: 'autumnDiscover', image: coupleImage, card_size: 'wide' },
+  { id: 'mountain', title_key: 'sustainableDestinations', image: mountainImage, card_size: 'narrow' },
+];
 
 const Discover = () => {
   const { language } = useLanguage();
   const t = (key) => getTranslation(language, key);
+  const [cards, setCards] = useState(null);
+
+  useEffect(() => {
+    fetchAPI('/discover-cards').then(data => {
+      if (data && data.length > 0) {
+        setCards(data.filter(c => c.is_active).sort((a, b) => a.sort_order - b.sort_order));
+      }
+    });
+  }, []);
+
+  // Build card data — use API if available, fallback otherwise
+  const titleCard = cards
+    ? cards.find(c => c.card_size === 'title')
+    : fallbackCards[0];
+  const wideCard = cards
+    ? cards.find(c => c.card_size === 'wide')
+    : fallbackCards[1];
+  const narrowCard = cards
+    ? cards.find(c => c.card_size === 'narrow')
+    : fallbackCards[2];
+
+  const getTitle = (card) => {
+    if (!card) return '';
+    if (cards) return localize(card, 'title', language);
+    return t(card.title_key);
+  };
+
+  const getImage = (card, fallback) => {
+    if (!card) return fallback;
+    if (cards) return card.image_url ? mediaUrl(card.image_url) : fallback;
+    return card.image || fallback;
+  };
 
   return (
     <section className="discover" id="discover-section">
@@ -23,14 +62,14 @@ const Discover = () => {
           {/* Right: Gallery Card with 4 vertical strips */}
           <div className="bento-card bento-gallery-card">
             <div className="gallery-strips">
-              <div className="gallery-strip" style={{ backgroundImage: `url(${galleryImage})`, backgroundPosition: '0% center' }}></div>
-              <div className="gallery-strip" style={{ backgroundImage: `url(${galleryImage})`, backgroundPosition: '33% center' }}></div>
-              <div className="gallery-strip" style={{ backgroundImage: `url(${galleryImage})`, backgroundPosition: '66% center' }}></div>
-              <div className="gallery-strip" style={{ backgroundImage: `url(${galleryImage})`, backgroundPosition: '100% center' }}></div>
+              <div className="gallery-strip" style={{ backgroundImage: `url(${getImage(titleCard, galleryImage)})`, backgroundPosition: '0% center' }}></div>
+              <div className="gallery-strip" style={{ backgroundImage: `url(${getImage(titleCard, galleryImage)})`, backgroundPosition: '33% center' }}></div>
+              <div className="gallery-strip" style={{ backgroundImage: `url(${getImage(titleCard, galleryImage)})`, backgroundPosition: '66% center' }}></div>
+              <div className="gallery-strip" style={{ backgroundImage: `url(${getImage(titleCard, galleryImage)})`, backgroundPosition: '100% center' }}></div>
             </div>
             <div className="bento-overlay"></div>
             <div className="bento-card-content">
-              <h3>{t('creatorsCut')}</h3>
+              <h3>{getTitle(titleCard)}</h3>
             </div>
           </div>
         </div>
@@ -40,19 +79,19 @@ const Discover = () => {
         <div className="bento-bottom-row">
           {/* Left Card - Wider (65%) */}
           <div className="bento-card bento-card-wide">
-            <div className="bento-image" style={{ backgroundImage: `url(${coupleImage})` }}></div>
+            <div className="bento-image" style={{ backgroundImage: `url(${getImage(wideCard, coupleImage)})` }}></div>
             <div className="bento-overlay"></div>
             <div className="bento-card-content">
-              <h3>{t('autumnDiscover')}</h3>
+              <h3>{getTitle(wideCard)}</h3>
             </div>
           </div>
 
           {/* Right Card - Narrower (35%) */}
           <div className="bento-card bento-card-narrow">
-            <div className="bento-image" style={{ backgroundImage: `url(${mountainImage})` }}></div>
+            <div className="bento-image" style={{ backgroundImage: `url(${getImage(narrowCard, mountainImage)})` }}></div>
             <div className="bento-overlay"></div>
             <div className="bento-card-content">
-              <h3>{t('sustainableDestinations')}</h3>
+              <h3>{getTitle(narrowCard)}</h3>
             </div>
           </div>
         </div>
@@ -62,4 +101,3 @@ const Discover = () => {
 };
 
 export default Discover;
-

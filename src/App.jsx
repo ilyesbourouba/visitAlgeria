@@ -4,8 +4,10 @@ import Hero from './components/Hero';
 import Discover from './components/Discover';
 import TopDestinations from './components/TopDestinations';
 import Suggestions from './components/Suggestions';
-import Manifestations from './components/Manifestations';
 import Panorama from './components/Panorama';
+import TourGuidePage from './components/TourGuide';
+import UpcomingActivities from './components/UpcomingActivities';
+import UnescoHeritage from './components/UnescoHeritage';
 import InspirationCalendar from './components/InspirationCalendar';
 import Footer from './components/Footer';
 import BackToTop from './components/BackToTop';
@@ -23,6 +25,7 @@ function App() {
   const [showEvents, setShowEvents] = useState(false);
   const [showDiscover, setShowDiscover] = useState(false);
   const [showDestinations, setShowDestinations] = useState(false);
+  const [showTourGuide, setShowTourGuide] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedWilaya, setSelectedWilaya] = useState(null);
   
@@ -61,6 +64,15 @@ function App() {
     setShowInfo(false);
     setShowEvents(false);
     setShowDiscover(false);
+    setShowTourGuide(false);
+    setSelectedEvent(null);
+  };
+
+  const handleOpenTourGuide = () => {
+    setShowTourGuide(true);
+    setShowInfo(false);
+    setShowEvents(false);
+    setShowDiscover(false);
     setSelectedEvent(null);
   };
 
@@ -69,6 +81,7 @@ function App() {
     setShowEvents(false);
     setShowDiscover(false);
     setShowDestinations(false);
+    setShowTourGuide(false);
     setShowCategory(false);
     setSelectedEvent(null);
     setSelectedCategory(null);
@@ -89,16 +102,15 @@ function App() {
         onEventsClick={handleOpenEvents}
         onDiscoverClick={handleOpenDiscover}
         onDestinationsClick={handleOpenDestinations}
+        onTourGuideClick={handleOpenTourGuide}
       />
       <Hero />
       <main>
         <Discover />
         <TopDestinations onOpenDestinations={handleOpenDestinations} />
         <Suggestions />
-        <Manifestations 
-          onViewAll={handleOpenEvents}
-          onSelectEvent={setSelectedEvent}
-        />
+        <UnescoHeritage />
+        <UpcomingActivities onViewAll={handleOpenEvents} />
         <Panorama />
         <InspirationCalendar />
       </main>
@@ -149,6 +161,10 @@ function App() {
           onClose={handleCloseAll}
           onSelectWilaya={setSelectedWilaya}
         />
+      )}
+
+      {showTourGuide && (
+        <TourGuidePage onClose={handleCloseAll} />
       )}
     </div>
   );

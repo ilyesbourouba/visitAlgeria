@@ -14,17 +14,19 @@ const wilayaDetails = {
         highlights: ['Saharan Desert', 'Timimoun Oasis', 'Ancient Ksour', 'Tuareg Culture'],
         highlightsAr: ['الصحراء الكبرى', 'واحة تيميمون', 'القصور القديمة', 'ثقافة الطوارق'],
         places: [
-            { name: 'Timimoun Red Oasis', description: 'A stunning red-colored oasis town known for its unique architecture and palm groves.', image: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?w=400&h=300&fit=crop' },
+            // Saharan oasis towns
+            { name: 'Timimoun Red Oasis', description: 'A stunning red-colored oasis town known for its unique architecture and palm groves.', image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&h=300&fit=crop' },
             { name: 'Gourara Region', description: 'Historic region with ancient foggaras (underground irrigation systems) and traditional villages.', image: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=400&h=300&fit=crop' },
-            { name: 'Touat Valley', description: 'A chain of oases stretching across the desert with date palm plantations.', image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&h=300&fit=crop' }
+            { name: 'Touat Valley', description: 'A chain of oases stretching across the desert with date palm plantations.', image: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?w=400&h=300&fit=crop' }
         ],
         gallery: [
-            'https://images.unsplash.com/photo-1548625361-1adba68e9f41?w=600&h=400&fit=crop',
+            // Saharan desert landscapes
+            'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=600&h=400&fit=crop',
             'https://images.unsplash.com/photo-1542401886-65d6c61db217?w=600&h=400&fit=crop',
             'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=600&h=400&fit=crop',
-            'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=600&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=600&h=400&fit=crop',
             'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600&h=400&fit=crop',
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop'
+            'https://images.unsplash.com/photo-1547235001-d703406d3f17?w=600&h=400&fit=crop'
         ],
         facts: { population: '400,000+', area: '427,968 km²', climate: 'Hot Desert', climateAr: 'صحراء حارة' }
     },
@@ -37,17 +39,19 @@ const wilayaDetails = {
         highlights: ['Mediterranean Coast', 'Casbah UNESCO Site', 'French Colonial Architecture', 'Cultural Capital'],
         highlightsAr: ['ساحل البحر المتوسط', 'قصبة اليونسكو', 'العمارة الاستعمارية', 'العاصمة الثقافية'],
         places: [
-            { name: 'The Casbah', description: 'UNESCO World Heritage site featuring winding streets and Ottoman-era architecture.', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop' },
-            { name: 'Notre Dame d\'Afrique', description: 'Beautiful basilica overlooking the Bay of Algiers with stunning views.', image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop' },
-            { name: 'Jardin d\'Essai', description: 'One of the most important botanical gardens in the world with diverse flora.', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400&h=300&fit=crop' }
+            // Algiers landmarks
+            { name: 'The Casbah', description: 'UNESCO World Heritage site featuring winding streets and Ottoman-era architecture.', image: 'https://images.unsplash.com/photo-1599423300746-b62533397364?w=400&h=300&fit=crop' },
+            { name: 'Notre Dame d\'Afrique', description: 'Beautiful basilica overlooking the Bay of Algiers with stunning views.', image: 'https://images.unsplash.com/photo-1590076083220-8e12f9f8d6b7?w=400&h=300&fit=crop' },
+            { name: 'Jardin d\'Essai', description: 'One of the most important botanical gardens in the world with diverse flora.', image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&h=300&fit=crop' }
         ],
         gallery: [
-            'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
+            // Algiers/Mediterranean cityscape
+            'https://images.unsplash.com/photo-1599423300746-b62533397364?w=600&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1590076083220-8e12f9f8d6b7?w=600&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=600&h=400&fit=crop',
             'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=400&fit=crop',
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
-            'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&h=400&fit=crop',
-            'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600&h=400&fit=crop',
-            'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600&h=400&fit=crop'
+            'https://images.unsplash.com/photo-1533929736562-6f2cded85c6c?w=600&h=400&fit=crop'
         ],
         facts: { population: '3,500,000+', area: '1,190 km²', climate: 'Mediterranean', climateAr: 'متوسطي' }
     },
@@ -60,16 +64,18 @@ const wilayaDetails = {
         highlights: ['City of Bridges', 'Ancient History', 'Rhumel Gorge', 'Cultural Heritage'],
         highlightsAr: ['مدينة الجسور', 'تاريخ قديم', 'وادي الرمل', 'التراث الثقافي'],
         places: [
-            { name: 'Sidi M\'Cid Bridge', description: 'Spectacular suspension bridge spanning the Rhumel Gorge at 175 meters high.', image: 'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&h=300&fit=crop' },
-            { name: 'Palace of Ahmed Bey', description: 'Beautiful 19th-century palace showcasing Ottoman architecture and art.', image: 'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=400&h=300&fit=crop' },
+            // Constantine landmarks
+            { name: 'Sidi M\'Cid Bridge', description: 'Spectacular suspension bridge spanning the Rhumel Gorge at 175 meters high.', image: 'https://images.unsplash.com/photo-1569288063643-5d29ad64df09?w=400&h=300&fit=crop' },
+            { name: 'Palace of Ahmed Bey', description: 'Beautiful 19th-century palace showcasing Ottoman architecture and art.', image: 'https://images.unsplash.com/photo-1590076083220-8e12f9f8d6b7?w=400&h=300&fit=crop' },
             { name: 'Tiddis Roman Ruins', description: 'Ancient Roman city ruins with well-preserved structures and mosaics.', image: 'https://images.unsplash.com/photo-1489493585363-d69421e0edd3?w=400&h=300&fit=crop' }
         ],
         gallery: [
-            'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600&h=400&fit=crop',
-            'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600&h=400&fit=crop',
+            // Constantine bridges and gorge
+            'https://images.unsplash.com/photo-1569288063643-5d29ad64df09?w=600&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1590076083220-8e12f9f8d6b7?w=600&h=400&fit=crop',
             'https://images.unsplash.com/photo-1489493585363-d69421e0edd3?w=600&h=400&fit=crop',
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
             'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600&h=400&fit=crop',
             'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600&h=400&fit=crop'
         ],
         facts: { population: '950,000+', area: '2,187 km²', climate: 'Semi-arid', climateAr: 'شبه جاف' }

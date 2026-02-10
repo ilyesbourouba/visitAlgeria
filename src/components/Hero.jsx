@@ -3,9 +3,10 @@ import './Hero.css';
 import heroVideo from '../assets/Algeria from Above 4K UHD - A Cinematic Drone Journey.mp4';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
+import { fetchAPI, localize, mediaUrl } from '../services/api';
 
-// Categories with translation keys
-const categories = [
+// Fallback categories (used when API is unavailable)
+const fallbackCategories = [
   { id: 0, key: "summerVacations", video: heroVideo },
   { id: 1, key: 'beaches', video: heroVideo },
   { id: 2, key: 'familyActivities', video: heroVideo },
@@ -20,9 +21,31 @@ const Hero = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
+  const [slides, setSlides] = useState(null); // API data
   const videoRefs = useRef([]);
   const { language } = useLanguage();
   const t = (key) => getTranslation(language, key);
+
+  // Fetch slides from API
+  useEffect(() => {
+    fetchAPI('/hero-slides').then(data => {
+      if (data && data.length > 0) {
+        setSlides(data.filter(s => s.is_active).sort((a, b) => a.sort_order - b.sort_order));
+      }
+    });
+  }, []);
+
+  // Determine data source: API slides or fallback
+  const categories = slides
+    ? slides.map((s, i) => ({
+        id: s.id || i,
+        key: null, // won't use translation key
+        title: localize(s, 'title', language),
+        video: s.video_url ? mediaUrl(s.video_url) : heroVideo,
+      }))
+    : fallbackCategories.map(c => ({ ...c, title: t(c.key) }));
+
+  const getTitle = (cat) => cat.title || t(cat.key);
 
   // Handle video transitions
   useEffect(() => {
@@ -127,7 +150,7 @@ const Hero = () => {
       {/* Hero Content */}
       <div className="hero-content">
         <h1 className="hero-title" key={activeIndex}>
-          {t(categories[activeIndex].key)}
+          {getTitle(categories[activeIndex])}
         </h1>
         <p className="hero-subtitle">{t('discoverBeauty')}</p>
       </div>
@@ -159,7 +182,7 @@ const Hero = () => {
               className={`carousel-category ${index === activeIndex ? 'active' : ''}`}
               onClick={() => goToSlide(index)}
             >
-              {t(cat.key)}
+              {getTitle(cat)}
             </button>
           ))}
         </div>
@@ -217,7 +240,7 @@ const Hero = () => {
                   onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
                 />
                 <div className="grid-item-overlay">
-                  <span className="grid-item-name">{t(cat.key)}</span>
+                  <span className="grid-item-name">{getTitle(cat)}</span>
                 </div>
               </div>
             ))}

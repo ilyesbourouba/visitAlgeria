@@ -6,7 +6,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
 
-const Header = ({ onInfoClick, onEventsClick, onDiscoverClick, onDestinationsClick }) => {
+const Header = ({ onInfoClick, onEventsClick, onDiscoverClick, onDestinationsClick, onTourGuideClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -51,6 +51,9 @@ const Header = ({ onInfoClick, onEventsClick, onDiscoverClick, onDestinationsCli
             <button className="nav-link" onClick={onEventsClick} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
               {t('navEvents')}
             </button>
+            <a className="nav-link" href="#" onClick={(e) => { e.preventDefault(); onTourGuideClick(); }} style={{ textDecoration: 'none' }}>
+              {t('tourGuide')}
+            </a>
           </nav>
         </div>
 
@@ -94,6 +97,9 @@ const Header = ({ onInfoClick, onEventsClick, onDiscoverClick, onDestinationsCli
         <button className="mobile-nav-link" onClick={() => handleMobileNavClick(onEventsClick)}>
           {t('navEvents')}
         </button>
+        <a className="mobile-nav-link" href="#" onClick={(e) => { e.preventDefault(); onTourGuideClick(); setMobileMenuOpen(false); }} style={{ textDecoration: 'none' }}>
+          {t('tourGuide')}
+        </a>
       </nav>
     </header>
   );

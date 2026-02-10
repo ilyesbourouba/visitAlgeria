@@ -2,16 +2,17 @@ import React, { useState, useRef, useEffect } from 'react';
 import './TopDestinations.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
+import { fetchAPI, localize, mediaUrl } from '../services/api';
 
-const destinations = [
-  { id: 1, nameKey: 'cityAlger', image: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&h=400&fit=crop' },
-  { id: 2, nameKey: 'cityConstantine', image: 'https://images.unsplash.com/photo-1565967511849-76a60a516170?w=600&h=400&fit=crop' },
-  { id: 3, nameKey: 'cityOran', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop' },
-  { id: 4, nameKey: 'cityTlemcen', image: 'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=600&h=400&fit=crop' },
-  { id: 5, nameKey: 'cityBejaia', image: 'https://images.unsplash.com/photo-1507272931001-fc06c17e4f43?w=600&h=400&fit=crop' },
-  { id: 6, nameKey: 'cityGhardaia', image: 'https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=600&h=400&fit=crop' },
-  { id: 7, nameKey: 'cityAnnaba', image: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=600&h=400&fit=crop' },
-  { id: 8, nameKey: 'cityTamanrasset', image: 'https://images.unsplash.com/photo-1509660933844-6910e12765a0?w=600&h=400&fit=crop' },
+const fallbackDestinations = [
+  { id: 1, nameKey: 'cityAlger', image: 'https://images.unsplash.com/photo-1599423300746-b62533397364?w=600&h=400&fit=crop' },
+  { id: 2, nameKey: 'cityConstantine', image: 'https://images.unsplash.com/photo-1569288063643-5d29ad64df09?w=600&h=400&fit=crop' },
+  { id: 3, nameKey: 'cityOran', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop' },
+  { id: 4, nameKey: 'cityTlemcen', image: 'https://images.unsplash.com/photo-1590076083220-8e12f9f8d6b7?w=600&h=400&fit=crop' },
+  { id: 5, nameKey: 'cityBejaia', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop' },
+  { id: 6, nameKey: 'cityGhardaia', image: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=600&h=400&fit=crop' },
+  { id: 7, nameKey: 'cityAnnaba', image: 'https://images.unsplash.com/photo-1533929736562-6f2cded85c6c?w=600&h=400&fit=crop' },
+  { id: 8, nameKey: 'cityTamanrasset', image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=600&h=400&fit=crop' },
 ];
 
 const TopDestinations = ({ onOpenDestinations }) => {
@@ -21,8 +22,23 @@ const TopDestinations = ({ onOpenDestinations }) => {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [apiData, setApiData] = useState(null);
   const { language } = useLanguage();
   const t = (key) => getTranslation(language, key);
+
+  useEffect(() => {
+    fetchAPI('/destinations').then(data => {
+      if (data && data.length > 0) {
+        setApiData(data.filter(d => d.is_active).sort((a, b) => a.sort_order - b.sort_order));
+      }
+    });
+  }, []);
+
+  const destinations = apiData
+    ? apiData.map(d => ({ id: d.id, name: localize(d, 'name', language), image: d.image_url ? mediaUrl(d.image_url) : '' }))
+    : fallbackDestinations.map(d => ({ ...d, name: t(d.nameKey) }));
+
+  const getName = (dest) => dest.name || t(dest.nameKey);
 
   const checkScrollButtons = () => {
     if (carouselRef.current) {
@@ -133,7 +149,7 @@ const TopDestinations = ({ onOpenDestinations }) => {
             >
               <div className="destination-overlay"></div>
             </div>
-            <h3 className="destination-name">{t(dest.nameKey)}</h3>
+            <h3 className="destination-name">{getName(dest)}</h3>
           </div>
         ))}
       </div>

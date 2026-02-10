@@ -216,21 +216,7 @@ button {
   font-family: 'Tajawal', 'Inter', system-ui, Arial, sans-serif;
 }
 
-[dir="rtl"] .header-left {
-  flex-direction: row-reverse;
-}
-
-[dir="rtl"] .header-nav {
-  flex-direction: row-reverse;
-}
-
-[dir="rtl"] .header-right {
-  flex-direction: row-reverse;
-}
-
-[dir="rtl"] .header-container {
-  flex-direction: row-reverse;
-}
+/* RTL header layout is handled natively by dir="rtl" — no flex-direction overrides needed */
 
 [dir="rtl"] .nav-link::after {
   left: auto;

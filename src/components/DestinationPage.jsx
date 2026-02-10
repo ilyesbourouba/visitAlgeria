@@ -6,8 +6,9 @@ import { getTranslation } from '../translations/translations';
 
 // Wilaya data with latitude/longitude for markers and placeholder images
 const wilayaData = [
-    { code: 1, name: 'Adrar', nameAr: 'أدرار', lat: 27.5, lng: 0.2, image: 'https://images.unsplash.com/photo-1548625361-1adba68e9f41?w=200&h=150&fit=crop' },
-    { code: 2, name: 'Chlef', nameAr: 'الشلف', lat: 36.15, lng: 1.3, image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=150&fit=crop' },
+    // Saharan desert oasis region
+    { code: 1, name: 'Adrar', nameAr: 'أدرار', lat: 27.5, lng: 0.2, image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=200&h=150&fit=crop' },
+    { code: 2, name: 'Chlef', nameAr: 'الشلف', lat: 36.15, lng: 1.3, image: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?w=200&h=150&fit=crop' },
     { code: 3, name: 'Laghouat', nameAr: 'الأغواط', lat: 33.8, lng: 2.9, image: 'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=200&h=150&fit=crop' },
     { code: 4, name: 'Oum El Bouaghi', nameAr: 'أم البواقي', lat: 35.8, lng: 7.1, image: 'https://images.unsplash.com/photo-1489493585363-d69421e0edd3?w=200&h=150&fit=crop' },
     { code: 5, name: 'Batna', nameAr: 'باتنة', lat: 35.5, lng: 6.2, image: 'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=200&h=150&fit=crop' },
@@ -16,12 +17,14 @@ const wilayaData = [
     { code: 8, name: 'Béchar', nameAr: 'بشار', lat: 31.6, lng: -2.2, image: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=200&h=150&fit=crop' },
     { code: 9, name: 'Blida', nameAr: 'البليدة', lat: 36.5, lng: 2.8, image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=150&fit=crop' },
     { code: 10, name: 'Bouïra', nameAr: 'البويرة', lat: 36.3, lng: 3.9, image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=200&h=150&fit=crop' },
-    { code: 11, name: 'Tamanrasset', nameAr: 'تمنراست', lat: 22.8, lng: 5.5, image: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?w=200&h=150&fit=crop' },
+    // Hoggar Mountains, Saharan landscapes
+    { code: 11, name: 'Tamanrasset', nameAr: 'تمنراست', lat: 22.8, lng: 5.5, image: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=200&h=150&fit=crop' },
     { code: 12, name: 'Tébessa', nameAr: 'تبسة', lat: 35.4, lng: 8.1, image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=200&h=150&fit=crop' },
     { code: 13, name: 'Tlemcen', nameAr: 'تلمسان', lat: 35.3, lng: -0.6, image: 'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=200&h=150&fit=crop' },
     { code: 14, name: 'Tiaret', nameAr: 'تيارت', lat: 35.4, lng: 1.3, image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=150&fit=crop' },
     { code: 15, name: 'Tizi Ouzou', nameAr: 'تيزي وزو', lat: 36.7, lng: 4.0, image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=200&h=150&fit=crop' },
-    { code: 16, name: 'Algiers', nameAr: 'الجزائر العاصمة', lat: 36.7, lng: 3.0, image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=150&fit=crop' },
+    // Algiers - Casbah/Capital city
+    { code: 16, name: 'Algiers', nameAr: 'الجزائر العاصمة', lat: 36.7, lng: 3.0, image: 'https://images.unsplash.com/photo-1599423300746-b62533397364?w=200&h=150&fit=crop' },
     { code: 17, name: 'Djelfa', nameAr: 'الجلفة', lat: 34.7, lng: 3.2, image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=200&h=150&fit=crop' },
     { code: 18, name: 'Jijel', nameAr: 'جيجل', lat: 36.8, lng: 5.7, image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200&h=150&fit=crop' },
     { code: 19, name: 'Sétif', nameAr: 'سطيف', lat: 36.2, lng: 5.4, image: 'https://images.unsplash.com/photo-1489493585363-d69421e0edd3?w=200&h=150&fit=crop' },
@@ -30,13 +33,15 @@ const wilayaData = [
     { code: 22, name: 'Sidi Bel Abbès', nameAr: 'سيدي بلعباس', lat: 35.2, lng: -0.6, image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=150&fit=crop' },
     { code: 23, name: 'Annaba', nameAr: 'عنابة', lat: 37.1, lng: 7.7, image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200&h=150&fit=crop' },
     { code: 24, name: 'Guelma', nameAr: 'قالمة', lat: 36.5, lng: 7.4, image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=200&h=150&fit=crop' },
-    { code: 25, name: 'Constantine', nameAr: 'قسنطينة', lat: 36.4, lng: 6.6, image: 'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=200&h=150&fit=crop' },
+    // Constantine - City of Bridges
+    { code: 25, name: 'Constantine', nameAr: 'قسنطينة', lat: 36.4, lng: 6.6, image: 'https://images.unsplash.com/photo-1569288063643-5d29ad64df09?w=200&h=150&fit=crop' },
     { code: 26, name: 'Médéa', nameAr: 'المدية', lat: 36.4, lng: 2.7, image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=150&fit=crop' },
     { code: 27, name: 'Mostaganem', nameAr: 'مستغانم', lat: 35.9, lng: 0.1, image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200&h=150&fit=crop' },
     { code: 28, name: "M'Sila", nameAr: 'المسيلة', lat: 35.7, lng: 4.5, image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=200&h=150&fit=crop' },
     { code: 29, name: 'Mascara', nameAr: 'معسكر', lat: 35.4, lng: 0.1, image: 'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=200&h=150&fit=crop' },
     { code: 30, name: 'Ouargla', nameAr: 'ورقلة', lat: 31.9, lng: 5.3, image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=200&h=150&fit=crop' },
-    { code: 31, name: 'Oran', nameAr: 'وهران', lat: 35.7, lng: -0.6, image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200&h=150&fit=crop' },
+    // Oran - Mediterranean port city
+    { code: 31, name: 'Oran', nameAr: 'وهران', lat: 35.7, lng: -0.6, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200&h=150&fit=crop' },
     { code: 32, name: 'El Bayadh', nameAr: 'البيض', lat: 33.8, lng: 1.0, image: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=200&h=150&fit=crop' },
     { code: 33, name: 'Illizi', nameAr: 'إليزي', lat: 26.1, lng: 8.5, image: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?w=200&h=150&fit=crop' },
     { code: 34, name: 'Bordj Bou Arréridj', nameAr: 'برج بوعريريج', lat: 36.1, lng: 4.7, image: 'https://images.unsplash.com/photo-1489493585363-d69421e0edd3?w=200&h=150&fit=crop' },
@@ -52,7 +57,8 @@ const wilayaData = [
     { code: 44, name: 'Aïn Defla', nameAr: 'عين الدفلى', lat: 36.3, lng: 2.1, image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=150&fit=crop' },
     { code: 45, name: 'Naâma', nameAr: 'النعامة', lat: 33.3, lng: 0.3, image: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=200&h=150&fit=crop' },
     { code: 46, name: 'Aïn Témouchent', nameAr: 'عين تيموشنت', lat: 35.3, lng: -1.1, image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200&h=150&fit=crop' },
-    { code: 47, name: 'Ghardaïa', nameAr: 'غرداية', lat: 32.5, lng: 3.8, image: 'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=200&h=150&fit=crop' },
+    // Ghardaïa - M'zab Valley UNESCO site
+    { code: 47, name: 'Ghardaïa', nameAr: 'غرداية', lat: 32.5, lng: 3.8, image: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=200&h=150&fit=crop' },
     { code: 48, name: 'Relizane', nameAr: 'غليزان', lat: 35.7, lng: 0.6, image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=150&fit=crop' },
     { code: 49, name: 'Timimoun', nameAr: 'تيميمون', lat: 29.2, lng: -0.3, image: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?w=200&h=150&fit=crop' },
     { code: 50, name: 'Bordj Badji Mokhtar', nameAr: 'برج باجي مختار', lat: 26.9, lng: 5.9, image: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=200&h=150&fit=crop' },
