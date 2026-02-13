@@ -9,6 +9,7 @@ import DiscoverCards from './pages/DiscoverCards';
 import Suggestions from './pages/Suggestions';
 import UnescoSites from './pages/UnescoSites';
 import Events from './pages/Events';
+import EventCategories from './pages/EventCategories';
 import TourLocations from './pages/TourLocations';
 import Panoramas from './pages/Panoramas';
 import CalendarPage from './pages/Calendar';
@@ -41,6 +42,7 @@ const App = () => {
             <Route path="discover-cards" element={<DiscoverCards />} />
             <Route path="suggestions" element={<Suggestions />} />
             <Route path="unesco-sites" element={<UnescoSites />} />
+            <Route path="event-categories" element={<EventCategories />} />
             <Route path="events" element={<Events />} />
             <Route path="tour-locations" element={<TourLocations />} />
             <Route path="panoramas" element={<Panoramas />} />

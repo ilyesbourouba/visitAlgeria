@@ -77,7 +77,20 @@ const CrudPage = ({ title, endpoint, columns, formFields }) => {
     setEditingItem(item);
     const data = {};
     formFields.forEach(f => {
-      data[f.key] = item[f.key] ?? '';
+      if (f.type === 'multiselect') {
+        // Convert array of objects (e.g. [{id:1, name_en:...}]) to array of IDs
+        const arr = Array.isArray(item[f.key]) ? item[f.key] : [];
+        data[f.key] = arr.map(v => typeof v === 'object' ? v.id : v);
+      } else if (f.type === 'gallery' || f.type === 'tags') {
+        data[f.key] = Array.isArray(item[f.key]) ? item[f.key] : [];
+      } else {
+        let val = item[f.key] ?? '';
+        // If it's a date field, extract YYYY-MM-DD for <input type="date">
+        if (f.key.toLowerCase().includes('date') && val && typeof val === 'string' && val.includes('T')) {
+          val = val.split('T')[0];
+        }
+        data[f.key] = val;
+      }
     });
     setFormData(data);
     setShowModal(true);
@@ -116,7 +129,7 @@ const CrudPage = ({ title, endpoint, columns, formFields }) => {
   };
 
   // --- File upload ---
-  const handleFileUpload = async (fieldKey, file, folder) => {
+  const handleFileUpload = async (fieldKey, file, folder, onSuccess) => {
     if (!file) return;
     setUploading(prev => ({ ...prev, [fieldKey]: true }));
     try {
@@ -125,7 +138,11 @@ const CrudPage = ({ title, endpoint, columns, formFields }) => {
       const res = await api.post(`/upload?folder=${folder || 'general'}`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      handleChange(fieldKey, res.data.url);
+      if (onSuccess) {
+        onSuccess(res.data.url);
+      } else {
+        handleChange(fieldKey, res.data.url);
+      }
     } catch (err) {
       alert('Upload failed: ' + (err.response?.data?.error || err.message));
     } finally {
@@ -256,6 +273,93 @@ const CrudPage = ({ title, endpoint, columns, formFields }) => {
             />
             {uploading[field.key] && <span className="upload-spinner">Uploading...</span>}
           </div>
+        </div>
+      );
+    }
+
+    // GALLERY (array of { image_url } or strings)
+    if (field.type === 'gallery') {
+      const images = Array.isArray(formData[field.key]) ? formData[field.key] : [];
+      return (
+        <div className="gallery-field">
+          <div className="gallery-grid">
+            {images.map((img, idx) => {
+              const url = typeof img === 'string' ? img : img.image_url;
+              return (
+                <div key={idx} className="gallery-item">
+                  <img src={getFullUrl(url)} alt={`Gallery ${idx + 1}`} />
+                  <button
+                    type="button"
+                    className="gallery-remove-btn"
+                    onClick={() => {
+                      const updated = images.filter((_, i) => i !== idx);
+                      handleChange(field.key, updated);
+                    }}
+                  >✕</button>
+                </div>
+              );
+            })}
+          </div>
+          <div className="upload-controls">
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={async (e) => {
+                const files = Array.from(e.target.files);
+                for (const file of files) {
+                  const tempKey = `__gallery_temp_${Date.now()}`;
+                  await handleFileUpload(
+                    tempKey,
+                    file,
+                    field.folder || endpoint.replace('/', ''),
+                    (url) => {
+                      // Use functional update to avoid stale closure
+                      setFormData(prev => ({
+                        ...prev,
+                        [field.key]: [...(Array.isArray(prev[field.key]) ? prev[field.key] : []), { image_url: url }]
+                      }));
+                    }
+                  );
+                }
+                // Reset file input
+                e.target.value = '';
+              }}
+            />
+            {Object.keys(uploading).some(k => k.startsWith('__gallery_temp_')) && (
+              <span className="upload-spinner">Uploading...</span>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // MULTISELECT (checkboxes, options = [{ value, label }])
+    if (field.type === 'multiselect') {
+      const selected = Array.isArray(formData[field.key]) ? formData[field.key] : [];
+      // selected can be array of IDs or array of { id }
+      const selectedIds = selected.map(s => typeof s === 'object' ? s.id : s);
+      return (
+        <div className="multiselect-field">
+          {(field.options || []).map(opt => (
+            <label key={opt.value} className="multiselect-option">
+              <input
+                type="checkbox"
+                checked={selectedIds.includes(opt.value)}
+                onChange={(e) => {
+                  let newVal;
+                  if (e.target.checked) {
+                    newVal = [...selectedIds, opt.value];
+                  } else {
+                    newVal = selectedIds.filter(id => id !== opt.value);
+                  }
+                  handleChange(field.key, newVal);
+                }}
+              />
+              <span>{opt.label}</span>
+            </label>
+          ))}
+          {(field.options || []).length === 0 && <span className="text-muted">No options available</span>}
         </div>
       );
     }

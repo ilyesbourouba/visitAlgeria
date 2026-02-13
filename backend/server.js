@@ -16,6 +16,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // --- Import route modules ---
 const authRoutes = require('./routes/auth');
 const eventsRoutes = require('./routes/events');
+const eventCategoriesRoutes = require('./routes/eventCategories');
 const tourLocationsRoutes = require('./routes/tourLocations');
 const tourGuideHeroRoutes = require('./routes/tourGuideHero');
 const settingsRoutes = require('./routes/settings');
@@ -26,6 +27,7 @@ const createCrudRouter = require('./helpers/crud');
 
 // --- Mount routes ---
 app.use('/api/auth', authRoutes);
+app.use('/api/event-categories', eventCategoriesRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/tour-locations', tourLocationsRoutes);
 app.use('/api/tour-guide-hero', tourGuideHeroRoutes);

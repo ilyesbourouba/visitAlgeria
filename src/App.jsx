@@ -110,7 +110,10 @@ function App() {
         <TopDestinations onOpenDestinations={handleOpenDestinations} />
         <Suggestions />
         <UnescoHeritage />
-        <UpcomingActivities onViewAll={handleOpenEvents} />
+        <UpcomingActivities 
+          onViewAll={handleOpenEvents} 
+          onSelectEvent={setSelectedEvent}
+        />
         <Panorama />
         <InspirationCalendar />
       </main>

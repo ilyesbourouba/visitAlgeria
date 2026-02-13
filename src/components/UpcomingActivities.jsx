@@ -26,7 +26,7 @@ const fallbackActivities = [
   }
 ];
 
-const UpcomingActivities = ({ onViewAll }) => {
+const UpcomingActivities = ({ onViewAll, onSelectEvent }) => {
   const { language } = useLanguage();
   const t = (key) => getTranslation(language, key);
   const isRTL = language === 'ar';
@@ -49,9 +49,10 @@ const UpcomingActivities = ({ onViewAll }) => {
         name: localize(e, 'title', language),
         desc: localize(e, 'description', language),
         date: e.date_start ? new Date(e.date_start).toLocaleDateString(language === 'ar' ? 'ar-DZ' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '',
-        tags: e.tags ? e.tags.map(tag => tag.name) : [],
+        tags: e.categories ? e.categories.map(cat => language === 'ar' ? (cat.name_ar || cat.name_en) : (cat.name_en || cat.name_ar)) : [],
         image: e.image_url ? mediaUrl(e.image_url) : '',
         _fromApi: true,
+        _event: e,
       }))
     : fallbackActivities.map(a => ({
         name: t(a.nameKey),
@@ -173,9 +174,19 @@ const UpcomingActivities = ({ onViewAll }) => {
                 </svg>
                 <span>{activity.date}</span>
               </div>
-              <a href="#" className="ua-activity-explore-btn">
+              <button
+                className="ua-activity-explore-btn"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (activity._fromApi && activity._event && onSelectEvent) {
+                    onSelectEvent(activity._event);
+                  } else if (onViewAll) {
+                    onViewAll();
+                  }
+                }}
+              >
                 {t('uaExploreBtn')} <span>→</span>
-              </a>
+              </button>
             </div>
           </div>
         ))}
