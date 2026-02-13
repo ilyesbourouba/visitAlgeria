@@ -17,6 +17,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const authRoutes = require('./routes/auth');
 const eventsRoutes = require('./routes/events');
 const tourLocationsRoutes = require('./routes/tourLocations');
+const tourGuideHeroRoutes = require('./routes/tourGuideHero');
 const settingsRoutes = require('./routes/settings');
 const discoverRoutes = require('./routes/discover');
 const calendarRoutes = require('./routes/calendar');
@@ -27,6 +28,7 @@ const createCrudRouter = require('./helpers/crud');
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/tour-locations', tourLocationsRoutes);
+app.use('/api/tour-guide-hero', tourGuideHeroRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/discover', discoverRoutes);
 app.use('/api/calendar', calendarRoutes);
@@ -39,6 +41,7 @@ app.use('/api/discover-cards', createCrudRouter('discover_cards'));
 app.use('/api/suggestions', createCrudRouter('suggestions'));
 app.use('/api/unesco-sites', createCrudRouter('unesco_sites'));
 app.use('/api/panoramas', createCrudRouter('panoramas'));
+app.use('/api/languages', createCrudRouter('languages'));
 
 // Health check
 app.get('/api/health', (req, res) => {

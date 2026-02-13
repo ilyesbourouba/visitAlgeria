@@ -11,18 +11,18 @@ const pool = require('../config/db');
 const auth = require('../middleware/auth');
 
 /**
- * Shift sort_order values to make room for a new entry.
- * If an item wants sort_order=N, all rows with sort_order >= N are bumped +1.
- * On update, the item's own row (excludeId) is excluded from the shift.
+ * Renumber all sort_order values in a table sequentially (1, 2, 3, ...).
+ * Optionally exclude one row (by id) from numbering.
  */
-async function shiftSortOrder(tableName, sortOrder, excludeId = null) {
-  let query = `UPDATE ${tableName} SET sort_order = sort_order + 1 WHERE sort_order >= ?`;
-  const params = [sortOrder];
-  if (excludeId) {
-    query += ' AND id != ?';
-    params.push(excludeId);
+async function renumberSortOrder(tableName, excludeId = null) {
+  let query = `SELECT id FROM ${tableName}`;
+  if (excludeId) query += ` WHERE id != ?`;
+  query += ` ORDER BY sort_order ASC, id ASC`;
+  const [rows] = await pool.query(query, excludeId ? [excludeId] : []);
+  for (let i = 0; i < rows.length; i++) {
+    await pool.query(`UPDATE ${tableName} SET sort_order = ? WHERE id = ?`, [i + 1, rows[i].id]);
   }
-  await pool.query(query, params);
+  return rows.length;
 }
 
 function createCrudRouter(tableName, options = {}) {
@@ -55,15 +55,16 @@ function createCrudRouter(tableName, options = {}) {
     }
   });
 
-  // POST create (protected) — with sort_order collision handling
+  // POST create (protected) — auto-assign next sort_order
   router.post('/', auth, async (req, res) => {
     try {
-      const data = req.body;
+      const data = { ...req.body };
 
-      // Auto-shift if sort_order is provided
-      if (data.sort_order !== undefined && data.sort_order !== null) {
-        await shiftSortOrder(tableName, data.sort_order);
-      }
+      // Always auto-assign sort_order = MAX + 1
+      const [[{ maxOrder }]] = await pool.query(
+        `SELECT COALESCE(MAX(sort_order), 0) AS maxOrder FROM ${tableName}`
+      );
+      data.sort_order = maxOrder + 1;
 
       const keys = Object.keys(data);
       const values = Object.values(data);
@@ -82,15 +83,25 @@ function createCrudRouter(tableName, options = {}) {
     }
   });
 
-  // PUT update (protected) — with sort_order collision handling
+  // PUT update (protected) — with sort_order reordering
   router.put('/:id', auth, async (req, res) => {
     try {
-      const data = req.body;
+      const data = { ...req.body };
       const id = req.params.id;
 
-      // Auto-shift if sort_order is being changed
+      // If sort_order is being changed, use "remove and insert" approach
       if (data.sort_order !== undefined && data.sort_order !== null) {
-        await shiftSortOrder(tableName, data.sort_order, id);
+        const newOrder = Number(data.sort_order);
+        // Renumber all other rows sequentially (excluding this one)
+        const otherCount = await renumberSortOrder(tableName, id);
+        // Clamp the new order to valid range
+        const clampedOrder = Math.max(1, Math.min(newOrder, otherCount + 1));
+        // Shift rows at or after the target position up by 1
+        await pool.query(
+          `UPDATE ${tableName} SET sort_order = sort_order + 1 WHERE sort_order >= ? AND id != ?`,
+          [clampedOrder, id]
+        );
+        data.sort_order = clampedOrder;
       }
 
       const keys = Object.keys(data);
@@ -111,11 +122,13 @@ function createCrudRouter(tableName, options = {}) {
     }
   });
 
-  // DELETE (protected)
+  // DELETE (protected) — renumber after deletion to close gaps
   router.delete('/:id', auth, async (req, res) => {
     try {
       const [result] = await pool.query(`DELETE FROM ${tableName} WHERE id = ?`, [req.params.id]);
       if (result.affectedRows === 0) return res.status(404).json({ error: 'Not found' });
+      // Renumber remaining rows to close the gap
+      await renumberSortOrder(tableName);
       res.json({ message: 'Deleted successfully' });
     } catch (err) {
       console.error(`DELETE /${tableName}/${req.params.id} error:`, err);

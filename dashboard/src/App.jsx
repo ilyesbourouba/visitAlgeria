@@ -14,6 +14,7 @@ import Panoramas from './pages/Panoramas';
 import CalendarPage from './pages/Calendar';
 import DiscoverPage from './pages/Discover';
 import Settings from './pages/Settings';
+import Languages from './pages/Languages';
 import './App.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -46,6 +47,7 @@ const App = () => {
             <Route path="calendar" element={<CalendarPage />} />
             <Route path="discover" element={<DiscoverPage />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="languages" element={<Languages />} />
           </Route>
         </Routes>
       </BrowserRouter>

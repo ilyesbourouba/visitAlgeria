@@ -17,7 +17,6 @@ const formFields = [
   { key: 'description_en', label: 'Description (English)', type: 'textarea' },
   { key: 'description_ar', label: 'Description (Arabic)', type: 'textarea' },
   { key: 'image_url', label: 'Image', type: 'image', folder: 'unesco-sites' },
-  { key: 'sort_order', label: 'Sort Order', type: 'number' },
   { key: 'is_active', label: 'Active', type: 'boolean' },
 ];
 

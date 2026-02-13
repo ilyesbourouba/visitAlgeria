@@ -15,7 +15,6 @@ const formFields = [
   { key: 'tag_en', label: 'Tag (English)', type: 'text' },
   { key: 'tag_ar', label: 'Tag (Arabic)', type: 'text' },
   { key: 'image_url', label: 'Image', type: 'image', folder: 'panoramas' },
-  { key: 'sort_order', label: 'Sort Order', type: 'number' },
   { key: 'is_active', label: 'Active', type: 'boolean' },
 ];
 

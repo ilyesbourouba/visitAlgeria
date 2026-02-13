@@ -1,24 +1,45 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const navItems = [
+const mainItems = [
   { path: '/', label: 'Dashboard', icon: '📊' },
+];
+
+const homePageItems = [
   { path: '/hero-slides', label: 'Hero Slides', icon: '🎬' },
   { path: '/destinations', label: 'Destinations', icon: '📍' },
   { path: '/discover-cards', label: 'Discover Cards', icon: '🃏' },
   { path: '/suggestions', label: 'Suggestions', icon: '💡' },
   { path: '/unesco-sites', label: 'UNESCO Sites', icon: '🏛️' },
   { path: '/events', label: 'Events', icon: '📅' },
-  { path: '/tour-locations', label: 'Tour Guide', icon: '🗺️' },
   { path: '/panoramas', label: 'Panoramas', icon: '🌄' },
   { path: '/calendar', label: 'Calendar', icon: '📆' },
   { path: '/discover', label: 'Discover Page', icon: '🔍' },
+];
+
+const standaloneItems = [
+  { path: '/tour-locations', label: 'Tour Guide', icon: '🗺️' },
+];
+
+const systemItems = [
+  { path: '/languages', label: 'Languages', icon: '🌐' },
   { path: '/settings', label: 'Settings', icon: '⚙️' },
 ];
 
 const Layout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isHomePageExpanded, setIsHomePageExpanded] = useState(false);
+
+  // Auto-expand if current route is within homePageItems
+  useEffect(() => {
+    const isUnderHomePage = homePageItems.some(item => location.pathname === item.path);
+    if (isUnderHomePage) {
+      setIsHomePageExpanded(true);
+    }
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -34,11 +55,56 @@ const Layout = () => {
         </div>
 
         <nav className="sidebar-nav">
-          {navItems.map(item => (
+          {mainItems.map(item => (
             <NavLink
               key={item.path}
               to={item.path}
               end={item.path === '/'}
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+            >
+              <span className="sidebar-icon">{item.icon}</span>
+              {item.label}
+            </NavLink>
+          ))}
+
+          <div className={`sidebar-group ${isHomePageExpanded ? 'expanded' : ''}`}>
+            <button 
+              className="sidebar-group-header" 
+              onClick={() => setIsHomePageExpanded(!isHomePageExpanded)}
+            >
+              <span className="sidebar-icon">🏠</span>
+              <span className="group-label">Home Page</span>
+              <span className="chevron"></span>
+            </button>
+            <div className="sidebar-submenu">
+              {homePageItems.map(item => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) => `sidebar-link submenu-link ${isActive ? 'active' : ''}`}
+                >
+                  <span className="sidebar-icon">{item.icon}</span>
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+
+          {standaloneItems.map(item => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+            >
+              <span className="sidebar-icon">{item.icon}</span>
+              {item.label}
+            </NavLink>
+          ))}
+
+          {systemItems.map(item => (
+            <NavLink
+              key={item.path}
+              to={item.path}
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             >
               <span className="sidebar-icon">{item.icon}</span>
@@ -64,3 +130,4 @@ const Layout = () => {
 };
 
 export default Layout;
+

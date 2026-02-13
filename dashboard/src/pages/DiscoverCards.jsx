@@ -13,7 +13,6 @@ const formFields = [
   { key: 'title_ar', label: 'Title (Arabic)', type: 'text' },
   { key: 'image_url', label: 'Image', type: 'image', folder: 'discover-cards' },
   { key: 'card_size', label: 'Card Size', type: 'select', options: ['title', 'wide', 'narrow'] },
-  { key: 'sort_order', label: 'Sort Order', type: 'number' },
   { key: 'is_active', label: 'Active', type: 'boolean' },
 ];
 

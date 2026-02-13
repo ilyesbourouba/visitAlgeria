@@ -12,7 +12,6 @@ const formFields = [
   { key: 'title_en', label: 'Title (English)', type: 'text' },
   { key: 'title_ar', label: 'Title (Arabic)', type: 'text' },
   { key: 'video_url', label: 'Video', type: 'video', folder: 'hero-slides' },
-  { key: 'sort_order', label: 'Sort Order', type: 'number' },
   { key: 'is_active', label: 'Active', type: 'boolean' },
 ];
 

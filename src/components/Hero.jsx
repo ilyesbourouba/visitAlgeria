@@ -133,13 +133,12 @@ const Hero = () => {
             key={cat.id}
             ref={(el) => (videoRefs.current[index] = el)}
             className={`hero-video ${index === activeIndex ? 'active' : ''}`}
+            src={cat.video}
             autoPlay={index === activeIndex}
             muted
             loop
             playsInline
-          >
-            <source src={cat.video} type="video/mp4" />
-          </video>
+          />
         ))}
       </div>
 
@@ -236,8 +235,7 @@ const Hero = () => {
                   muted
                   loop
                   playsInline
-                  onMouseEnter={(e) => e.target.play()}
-                  onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                  style={{ pointerEvents: 'none' }}
                 />
                 <div className="grid-item-overlay">
                   <span className="grid-item-name">{getTitle(cat)}</span>

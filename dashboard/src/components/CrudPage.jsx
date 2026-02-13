@@ -260,6 +260,52 @@ const CrudPage = ({ title, endpoint, columns, formFields }) => {
       );
     }
 
+    // TAGS (array of { tag_en, tag_ar })
+    if (field.type === 'tags') {
+      const tags = Array.isArray(formData[field.key]) ? formData[field.key] : [];
+      return (
+        <div className="tags-field">
+          {tags.map((tag, idx) => (
+            <div key={idx} className="tag-row">
+              <input
+                type="text"
+                value={tag.tag_en || ''}
+                onChange={e => {
+                  const updated = [...tags];
+                  updated[idx] = { ...updated[idx], tag_en: e.target.value };
+                  handleChange(field.key, updated);
+                }}
+                placeholder="Tag (English)"
+              />
+              <input
+                type="text"
+                value={tag.tag_ar || ''}
+                onChange={e => {
+                  const updated = [...tags];
+                  updated[idx] = { ...updated[idx], tag_ar: e.target.value };
+                  handleChange(field.key, updated);
+                }}
+                placeholder="Tag (Arabic)"
+              />
+              <button
+                type="button"
+                className="btn btn-delete btn-sm"
+                onClick={() => {
+                  const updated = tags.filter((_, i) => i !== idx);
+                  handleChange(field.key, updated);
+                }}
+              >✕</button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => handleChange(field.key, [...tags, { tag_en: '', tag_ar: '' }])}
+          >+ Add Tag</button>
+        </div>
+      );
+    }
+
     return (
       <input
         type={field.type || 'text'}
@@ -391,7 +437,7 @@ const CrudPage = ({ title, endpoint, columns, formFields }) => {
             </div>
             <form onSubmit={handleSubmit}>
               <div className="modal-body">
-                {formFields.map(field => (
+                {formFields.filter(f => editingItem || !f.hideOnCreate).map(field => (
                   <div className="form-group" key={field.key}>
                     <label>{field.label}</label>
                     {renderField(field)}

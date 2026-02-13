@@ -28,7 +28,6 @@ const formFields = [
   { key: 'contact_email', label: 'Contact Email', type: 'email' },
   { key: 'homepage', label: 'Homepage URL', type: 'text' },
   { key: 'is_featured', label: 'Featured on Homepage', type: 'boolean' },
-  { key: 'sort_order', label: 'Sort Order', type: 'number' },
   { key: 'is_active', label: 'Active', type: 'boolean' },
 ];
 

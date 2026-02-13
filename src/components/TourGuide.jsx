@@ -3,44 +3,74 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
 import './TourGuide.css';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const TourGuidePage = ({ onClose }) => {
   const { language, isRTL } = useLanguage();
   const t = (key) => getTranslation(language, key);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeMatterport, setActiveMatterport] = useState(null);
+  const [locations, setLocations] = useState([]);
+  const [settings, setSettings] = useState({});
+  const [loading, setLoading] = useState(true);
 
   const imageRefs = useRef([]);
   const textRefs = useRef([]);
 
-  const locations = [
-    {
-      id: '01',
-      titleKey: 'vtLocGhardaia',
-      tags: ['vtTagUnesco', 'vtTagArchitecture', 'vtTag360'],
-      descKey: 'vtDescGhardaia',
-      ctaKey: 'vtEnterTour',
-      image: 'https://images.unsplash.com/photo-1587974928442-77dc3e0dba72?auto=format&fit=crop&q=80&w=800'
-    },
-    {
-      id: '02',
-      titleKey: 'vtLocTimgad',
-      tags: ['vtTagHistory', 'vtTagRuins', 'vtTagInteractive'],
-      descKey: 'vtDescTimgad',
-      ctaKey: 'vtEnterTour',
-      image: 'https://images.unsplash.com/photo-1549145177-238518f1ec1a?auto=format&fit=crop&q=80&w=800'
-    },
-    {
-      id: '03',
-      titleKey: 'vtLocCasbah',
-      tags: ['vtTagCulture', 'vtTagLabyrinth', 'vtTagAudio'],
-      descKey: 'vtDescCasbah',
-      ctaKey: 'vtEnterTour',
-      image: 'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?auto=format&fit=crop&q=80&w=800'
-    }
-  ];
-
+  // Fetch data
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [locRes, heroRes] = await Promise.all([
+          fetch(`${API_BASE}/api/tour-locations?active=true`),
+          fetch(`${API_BASE}/api/tour-guide-hero`)
+        ]);
+        
+        const locData = await locRes.json();
+        const heroData = await heroRes.json();
+        
+        setLocations(Array.isArray(locData) ? locData : []);
+        setSettings(heroData || {});
+        setLoading(false);
+      } catch (err) {
+        console.error('Failed to load data:', err);
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Helper to pick the right language field
+  const localize = (item, field) => {
+    if (!item) return '';
+    if (language === 'ar') return item[`${field}_ar`] || item[`${field}_en`] || '';
+    return item[`${field}_en`] || item[`${field}_ar`] || '';
+  };
+
+  // Special helper for the hero settings object
+  const getHeroField = (field) => {
+    if (language === 'ar') return settings[`${field}_ar`] || settings[`${field}_en`] || '';
+    return settings[`${field}_en`] || settings[`${field}_ar`] || '';
+  };
+
+  const getTagText = (tag) => {
+    if (language === 'ar') return tag.tag_ar || tag.tag_en || '';
+    return tag.tag_en || tag.tag_ar || '';
+  };
+
+  const getFullUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    return `${API_BASE}${cleanPath}`;
+  };
+
+  // Intersection Observer for scroll animations
+  useEffect(() => {
+    if (loading || locations.length === 0) return;
+
     const observerOptions = {
-      threshold: 0.2,
+      threshold: 0.1,
       rootMargin: '0px 0px -50px 0px'
     };
 
@@ -52,11 +82,28 @@ const TourGuidePage = ({ onClose }) => {
       });
     }, observerOptions);
 
+    // Add visible class with a small delay for immediate viewport items
+    const timer = setTimeout(() => {
+      imageRefs.current.forEach(img => {
+        if (img && img.getBoundingClientRect().top < window.innerHeight) {
+          img.classList.add('visible');
+        }
+      });
+      textRefs.current.forEach(txt => {
+        if (txt && txt.getBoundingClientRect().top < window.innerHeight) {
+          txt.classList.add('visible');
+        }
+      });
+    }, 500);
+
     imageRefs.current.forEach(img => img && observer.observe(img));
     textRefs.current.forEach(txt => txt && observer.observe(txt));
 
-    return () => observer.disconnect();
-  }, []);
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
+  }, [loading, locations]);
 
   // Close modal on Escape
   useEffect(() => {
@@ -64,6 +111,7 @@ const TourGuidePage = ({ onClose }) => {
       if (e.key === 'Escape') {
         if (isModalOpen) {
           setIsModalOpen(false);
+          setActiveMatterport(null);
         } else {
           onClose();
         }
@@ -79,6 +127,19 @@ const TourGuidePage = ({ onClose }) => {
     };
   }, [isModalOpen, onClose]);
 
+  const openTour = (matterportUrl) => {
+    if (matterportUrl) {
+      setActiveMatterport(matterportUrl);
+      setIsModalOpen(true);
+    }
+  };
+
+  // Fallback for hero content if settings aren't loaded yet
+  const heroBg = settings.bg_image_url || 'https://images.unsplash.com/photo-1587974928442-77dc3e0dba72?auto=format&fit=crop&q=80&w=1600';
+  const heroBadge = getHeroField('badge') || t('vtBadge');
+  const heroTitle = getHeroField('title') || t('vtHeadline');
+  const heroSubtitle = getHeroField('subtitle') || t('vtSubtitle');
+
   return (
     <div className={`tour-guide-overlay ${isRTL ? 'rtl' : ''}`}>
       <div className="tour-guide-page-content">
@@ -92,56 +153,73 @@ const TourGuidePage = ({ onClose }) => {
 
         {/* Hero Section */}
         <section className="tg-page-hero">
-          <div className="tg-page-hero-bg"></div>
+          <div 
+            className="tg-page-hero-bg" 
+            style={{ backgroundImage: `url(${getFullUrl(heroBg)})` }}
+          ></div>
           <div className="tg-page-hero-content">
-            <span className="tg-badge">{t('vtBadge')}</span>
-            <h1 className="tg-page-title">{t('vtHeadline')}</h1>
-            <p className="tg-page-subtitle">{t('vtSubtitle')}</p>
+            <span className="tg-badge">{heroBadge}</span>
+            <h1 className="tg-page-title">{heroTitle}</h1>
+            <p className="tg-page-subtitle">{heroSubtitle}</p>
           </div>
         </section>
 
         {/* Locations */}
         <div className="tg-locations-container">
-          {locations.map((loc, index) => (
-            <article key={loc.id} className="tg-location-article">
-              <div
-                className="tg-loc-text fade-text"
-                ref={el => textRefs.current[index] = el}
-              >
-                <span className="tg-loc-number">{loc.id}</span>
-                <h3>{t(loc.titleKey)}</h3>
-                <div className="tg-tags">
-                  {loc.tags.map((tag, i) => (
-                    <span key={i} className="tg-tag">{t(tag)}</span>
-                  ))}
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '10rem', color: 'rgba(255,255,255,0.5)' }}>
+              <div className="tg-loading-spinner"></div>
+              <p>Preparing your journey...</p>
+            </div>
+          ) : locations.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '5rem', color: 'rgba(255,255,255,0.3)' }}>
+              <p>No tour locations discovered yet.</p>
+            </div>
+          ) : (
+            locations.map((loc, index) => (
+              <article key={loc.id} className="tg-location-article">
+                <div
+                  className="tg-loc-text fade-text"
+                  ref={el => textRefs.current[index] = el}
+                >
+                  <span className="tg-loc-number">{String(index + 1).padStart(2, '0')}</span>
+                  <h3>{localize(loc, 'title')}</h3>
+                  <div className="tg-tags">
+                    {(loc.tags || []).map((tag, i) => (
+                      <span key={i} className="tg-tag">{getTagText(tag)}</span>
+                    ))}
+                  </div>
+                  <p>{localize(loc, 'description')}</p>
+                  {loc.matterport_url && (
+                    <button className="tg-explore-link" onClick={() => openTour(loc.matterport_url)}>
+                      {t('vtEnterTour')} {isRTL ? '←' : '→'}
+                    </button>
+                  )}
                 </div>
-                <p>{t(loc.descKey)}</p>
-                <button className="tg-explore-link" onClick={() => setIsModalOpen(true)}>
-                  {t(loc.ctaKey)} {isRTL ? '←' : '→'}
-                </button>
-              </div>
-              <div className="tg-loc-image-wrapper">
-                <img
-                  src={loc.image}
-                  alt={t(loc.titleKey)}
-                  className="tg-loc-image scroll-reveal"
-                  ref={el => imageRefs.current[index] = el}
-                  loading="lazy"
-                />
-              </div>
-            </article>
-          ))}
+                <div className="tg-loc-image-wrapper">
+                  <img
+                    src={getFullUrl(loc.image_url)}
+                    alt={localize(loc, 'title')}
+                    className="tg-loc-image scroll-reveal"
+                    ref={el => imageRefs.current[index] = el}
+                    loading="lazy"
+                    onLoad={(e) => e.target.classList.add('loaded')}
+                  />
+                </div>
+              </article>
+            ))
+          )}
         </div>
 
         {/* Matterport VR Modal */}
-        {isModalOpen && (
-          <div className="tg-modal-overlay" onClick={() => setIsModalOpen(false)}>
+        {isModalOpen && activeMatterport && (
+          <div className="tg-modal-overlay" onClick={() => { setIsModalOpen(false); setActiveMatterport(null); }}>
             <div className="tg-modal-content" onClick={e => e.stopPropagation()}>
-              <button className="tg-modal-close" onClick={() => setIsModalOpen(false)}>×</button>
+              <button className="tg-modal-close" onClick={() => { setIsModalOpen(false); setActiveMatterport(null); }}>×</button>
               <iframe
                 width="100%"
                 height="100%"
-                src="https://my.matterport.com/show/?m=M6gCqdgrcmQ"
+                src={activeMatterport}
                 frameBorder="0"
                 allowFullScreen
                 allow="xr-spatial-tracking"
