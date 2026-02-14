@@ -8,13 +8,16 @@ const mainItems = [
 
 const homePageItems = [
   { path: '/hero-slides', label: 'Hero Slides', icon: '🎬' },
-  { path: '/destinations', label: 'Destinations', icon: '📍' },
   { path: '/discover-cards', label: 'Discover Cards', icon: '🃏' },
   { path: '/suggestions', label: 'Suggestions', icon: '💡' },
   { path: '/unesco-sites', label: 'UNESCO Sites', icon: '🏛️' },
   { path: '/panoramas', label: 'Panoramas', icon: '🌄' },
   { path: '/calendar', label: 'Calendar', icon: '📆' },
   { path: '/discover', label: 'Discover Page', icon: '🔍' },
+];
+
+const destinationsItems = [
+  { path: '/destinations', label: 'Wilayas', icon: '🏛️' },
 ];
 
 const eventsItems = [
@@ -42,6 +45,7 @@ const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isHomePageExpanded, setIsHomePageExpanded] = useState(false);
+  const [isDestinationsExpanded, setIsDestinationsExpanded] = useState(false);
   const [isEventsExpanded, setIsEventsExpanded] = useState(false);
   const [isDiscoverExpanded, setIsDiscoverExpanded] = useState(false);
 
@@ -49,6 +53,9 @@ const Layout = () => {
   useEffect(() => {
     if (homePageItems.some(item => location.pathname === item.path)) {
       setIsHomePageExpanded(true);
+    }
+    if (destinationsItems.some(item => location.pathname === item.path)) {
+      setIsDestinationsExpanded(true);
     }
     if (eventsItems.some(item => location.pathname === item.path)) {
       setIsEventsExpanded(true);
@@ -96,6 +103,30 @@ const Layout = () => {
             </button>
             <div className="sidebar-submenu">
               {homePageItems.map(item => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) => `sidebar-link submenu-link ${isActive ? 'active' : ''}`}
+                >
+                  <span className="sidebar-icon">{item.icon}</span>
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+
+          {/* Destinations group */}
+          <div className={`sidebar-group ${isDestinationsExpanded ? 'expanded' : ''}`}>
+            <button 
+              className="sidebar-group-header" 
+              onClick={() => setIsDestinationsExpanded(!isDestinationsExpanded)}
+            >
+              <span className="sidebar-icon">🏛️</span>
+              <span className="group-label">Destinations</span>
+              <span className="chevron"></span>
+            </button>
+            <div className="sidebar-submenu">
+              {destinationsItems.map(item => (
                 <NavLink
                   key={item.path}
                   to={item.path}

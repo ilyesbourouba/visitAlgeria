@@ -106,11 +106,19 @@ const CrudPage = ({ title, endpoint, columns, formFields, transformBeforeSave })
     e.preventDefault();
     setSaving(true);
     try {
+      // Filter out 'divider' fields from the payload
+      const cleanData = { ...formData };
+      formFields.forEach(f => {
+        if (f.type === 'divider') {
+          delete cleanData[f.key];
+        }
+      });
+
       if (editingItem) {
-        const payload = transformBeforeSave ? transformBeforeSave({ ...formData }) : formData;
+        const payload = transformBeforeSave ? transformBeforeSave({ ...cleanData }) : cleanData;
         await api.put(`${endpoint}/${editingItem.id}`, payload);
       } else {
-        const payload = transformBeforeSave ? transformBeforeSave({ ...formData }) : formData;
+        const payload = transformBeforeSave ? transformBeforeSave({ ...cleanData }) : cleanData;
         await api.post(endpoint, payload);
       }
       setShowModal(false);
@@ -187,6 +195,14 @@ const CrudPage = ({ title, endpoint, columns, formFields, transformBeforeSave })
 
   const renderField = (field) => {
     const val = formData[field.key] ?? '';
+
+    if (field.type === 'divider') {
+      return (
+        <div className="field-divider">
+          <span>{field.label}</span>
+        </div>
+      );
+    }
 
     if (field.type === 'boolean') {
       return (
@@ -294,7 +310,7 @@ const CrudPage = ({ title, endpoint, columns, formFields, transformBeforeSave })
       );
     }
 
-    // GALLERY (array of { image_url } or strings)
+    // GALLERY (array of { image_url, type } or strings)
     if (field.type === 'gallery') {
       const images = Array.isArray(formData[field.key]) ? formData[field.key] : [];
       return (
@@ -302,9 +318,21 @@ const CrudPage = ({ title, endpoint, columns, formFields, transformBeforeSave })
           <div className="gallery-grid">
             {images.map((img, idx) => {
               const url = typeof img === 'string' ? img : img.image_url;
+              const itemType = typeof img === 'object' ? img.type : 'image';
+              const isVideo = itemType === 'video' || /\.(mp4|webm|mov|avi)$/i.test(url || '');
               return (
                 <div key={idx} className="gallery-item">
-                  <img src={getFullUrl(url)} alt={`Gallery ${idx + 1}`} />
+                  {isVideo ? (
+                    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                      <video src={getFullUrl(url)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} muted />
+                      <div style={{
+                        position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '24px', pointerEvents: 'none'
+                      }}>▶</div>
+                    </div>
+                  ) : (
+                    <img src={getFullUrl(url)} alt={`Gallery ${idx + 1}`} />
+                  )}
                   <button
                     type="button"
                     className="gallery-remove-btn"
@@ -320,11 +348,12 @@ const CrudPage = ({ title, endpoint, columns, formFields, transformBeforeSave })
           <div className="upload-controls">
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,video/mp4,video/webm,video/quicktime"
               multiple
               onChange={async (e) => {
                 const files = Array.from(e.target.files);
                 for (const file of files) {
+                  const fileType = file.type.startsWith('video/') ? 'video' : 'image';
                   const tempKey = `__gallery_temp_${Date.now()}`;
                   await handleFileUpload(
                     tempKey,
@@ -334,7 +363,7 @@ const CrudPage = ({ title, endpoint, columns, formFields, transformBeforeSave })
                       // Use functional update to avoid stale closure
                       setFormData(prev => ({
                         ...prev,
-                        [field.key]: [...(Array.isArray(prev[field.key]) ? prev[field.key] : []), { image_url: url }]
+                        [field.key]: [...(Array.isArray(prev[field.key]) ? prev[field.key] : []), { image_url: url, type: fileType }]
                       }));
                     }
                   );

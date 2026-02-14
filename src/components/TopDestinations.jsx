@@ -15,7 +15,7 @@ const fallbackDestinations = [
   { id: 8, nameKey: 'cityTamanrasset', image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=600&h=400&fit=crop' },
 ];
 
-const TopDestinations = ({ onOpenDestinations }) => {
+const TopDestinations = ({ onOpenDestinations, onSelectDestination }) => {
   const carouselRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -35,7 +35,12 @@ const TopDestinations = ({ onOpenDestinations }) => {
   }, []);
 
   const destinations = apiData
-    ? apiData.map(d => ({ id: d.id, name: localize(d, 'name', language), image: d.image_url ? mediaUrl(d.image_url) : '' }))
+    ? apiData.map(d => ({
+        id: d.id,
+        name: localize(d, 'name', language),
+        image: d.background_image ? mediaUrl(d.background_image) : '',
+        rawData: d
+      }))
     : fallbackDestinations.map(d => ({ ...d, name: t(d.nameKey) }));
 
   const getName = (dest) => dest.name || t(dest.nameKey);
@@ -94,6 +99,15 @@ const TopDestinations = ({ onOpenDestinations }) => {
     });
   };
 
+  const handleCardClick = (dest) => {
+    if (isDragging) return; // Don't navigate if user was dragging
+    if (onSelectDestination && dest.rawData) {
+      onSelectDestination(dest.rawData);
+    } else if (onOpenDestinations) {
+      onOpenDestinations();
+    }
+  };
+
   return (
     <section className="top-destinations" id="top-destinations">
       <div className="destinations-header">
@@ -142,7 +156,12 @@ const TopDestinations = ({ onOpenDestinations }) => {
         onTouchMove={handleTouchMove}
       >
         {destinations.map((dest) => (
-          <div key={dest.id} className="destination-card">
+          <div
+            key={dest.id}
+            className="destination-card"
+            onClick={() => handleCardClick(dest)}
+            style={{ cursor: 'pointer' }}
+          >
             <div 
               className="destination-image" 
               style={{ backgroundImage: `url(${dest.image})` }}
@@ -158,4 +177,3 @@ const TopDestinations = ({ onOpenDestinations }) => {
 };
 
 export default TopDestinations;
-

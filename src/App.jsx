@@ -35,6 +35,9 @@ function App() {
   const [selectedCategoryItem, setSelectedCategoryItem] = useState(null);
   const [openedFromDiscover, setOpenedFromDiscover] = useState(false);
 
+  // When a destination card is clicked from home page, open destinations with that wilaya pre-selected
+  const [initialWilaya, setInitialWilaya] = useState(null);
+
   const handleOpenCategory = (category, fromDiscover = false) => {
     setSelectedCategory(category);
     setShowCategory(true);
@@ -72,6 +75,19 @@ function App() {
     setShowTourGuide(false);
     setSelectedEvent(null);
     setOpenedFromDiscover(false);
+    setInitialWilaya(null);
+  };
+
+  const handleSelectDestination = (destinationData) => {
+    // Open destination page with a specific wilaya pre-selected for detail view
+    setInitialWilaya(destinationData);
+    setShowDestinations(true);
+    setShowInfo(false);
+    setShowEvents(false);
+    setShowDiscover(false);
+    setShowTourGuide(false);
+    setSelectedEvent(null);
+    setOpenedFromDiscover(false);
   };
 
   const handleOpenTourGuide = () => {
@@ -94,6 +110,7 @@ function App() {
     setSelectedCategory(null);
     setSelectedCategoryItem(null);
     setSelectedWilaya(null);
+    setInitialWilaya(null);
     setOpenedFromDiscover(false);
   };
 
@@ -119,9 +136,12 @@ function App() {
       />
       <Hero />
       <main>
-        <Discover />
-        <TopDestinations onOpenDestinations={handleOpenDestinations} />
-        <Suggestions />
+        <Discover onOpenDiscover={handleOpenDiscover} />
+        <TopDestinations
+          onOpenDestinations={handleOpenDestinations}
+          onSelectDestination={handleSelectDestination}
+        />
+        <Suggestions onSelectDestination={handleSelectDestination} />
         <UnescoHeritage onExploreUNESCO={handleOpenCategory} />
         <UpcomingActivities 
           onViewAll={handleOpenEvents} 
@@ -176,6 +196,13 @@ function App() {
         <DestinationPage 
           onClose={handleCloseAll}
           onSelectWilaya={setSelectedWilaya}
+          initialWilaya={initialWilaya}
+          onSelectPlace={(place) => {
+            setSelectedCategoryItem(place);
+            // We need to ensure the CategoryDetail modal knows what "category" it is for fallback logic
+            // though most items from the API have explicit data.
+            setSelectedCategory(place.category || 'heritage'); 
+          }}
         />
       )}
 
@@ -187,5 +214,3 @@ function App() {
 }
 
 export default App;
-
-

@@ -13,7 +13,7 @@ const fallbackCards = [
   { id: 'mountain', title_key: 'sustainableDestinations', image: mountainImage, card_size: 'narrow' },
 ];
 
-const Discover = () => {
+const Discover = ({ onOpenDiscover }) => {
   const { language } = useLanguage();
   const t = (key) => getTranslation(language, key);
   const [cards, setCards] = useState(null);
@@ -62,6 +62,10 @@ const Discover = () => {
     return card.image || fallback;
   };
 
+  const handleCardClick = () => {
+    if (onOpenDiscover) onOpenDiscover();
+  };
+
   return (
     <section className="discover" id="discover-section">
       <div className="discover-bento">
@@ -73,7 +77,7 @@ const Discover = () => {
           </div>
           
           {/* Right: Gallery Card with 4 vertical strips */}
-          <div className="bento-card bento-gallery-card">
+          <div className="bento-card bento-gallery-card" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
             <div className="gallery-strips">
               <div className="gallery-strip" style={{ backgroundImage: `url(${getImage(titleCard, galleryImage)})`, backgroundPosition: '0% center' }}></div>
               <div className="gallery-strip" style={{ backgroundImage: `url(${getImage(titleCard, galleryImage)})`, backgroundPosition: '33% center' }}></div>
@@ -91,7 +95,7 @@ const Discover = () => {
         {/* Bottom Row */}
         <div className="bento-bottom-row">
           {/* Left Card - Wider (65%) */}
-          <div className="bento-card bento-card-wide">
+          <div className="bento-card bento-card-wide" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
             <div className="bento-image" style={{ backgroundImage: `url(${getImage(wideCard, coupleImage)})` }}></div>
             <div className="bento-overlay"></div>
             <div className="bento-card-content">
@@ -100,7 +104,7 @@ const Discover = () => {
           </div>
 
           {/* Right Card - Narrower (35%) */}
-          <div className="bento-card bento-card-narrow">
+          <div className="bento-card bento-card-narrow" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
             <div className="bento-image" style={{ backgroundImage: `url(${getImage(narrowCard, mountainImage)})` }}></div>
             <div className="bento-overlay"></div>
             <div className="bento-card-content">

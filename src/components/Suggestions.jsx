@@ -12,7 +12,7 @@ const fallbackSlides = [
   { id: 3, tag: 'tagNature', title: 'titleDjurdjura', description: 'descDjurdjura', image: heroImage },
 ];
 
-const Suggestions = () => {
+const Suggestions = ({ onSelectDestination }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
@@ -21,26 +21,40 @@ const Suggestions = () => {
   const t = (key) => getTranslation(language, key);
 
   useEffect(() => {
-    fetchAPI('/suggestions').then(data => {
+    // Fetch destinations marked for homepage to display as suggestions
+    fetchAPI('/destinations?homepage=true').then(data => {
       if (data && data.length > 0) {
-        setApiData(data.filter(s => s.is_active).sort((a, b) => a.sort_order - b.sort_order));
+        setApiData(data.sort((a, b) => a.sort_order - b.sort_order));
       }
     });
   }, []);
 
   const slidesData = apiData
-    ? apiData.map(s => ({
-        id: s.id,
-        tag: localize(s, 'tag', language),
-        title: localize(s, 'title', language),
-        description: localize(s, 'description', language),
-        image: s.image_url ? mediaUrl(s.image_url) : heroImage,
+    ? apiData.map(d => ({
+        id: d.id,
+        tag: localize(d, 'climate', language) || (language === 'ar' ? 'وجهة' : 'Destination'),
+        title: localize(d, 'name', language),
+        description: localize(d, 'about', language) || '',
+        image: d.background_image ? mediaUrl(d.background_image) : heroImage,
+        rawData: d
       }))
     : fallbackSlides;
 
   const getTag = (slide) => apiData ? slide.tag : t(slide.tag);
   const getTitle = (slide) => apiData ? slide.title : t(slide.title);
-  const getDesc = (slide) => apiData ? slide.description : t(slide.description);
+  const getDesc = (slide) => {
+    if (!apiData) return t(slide.description);
+    // Strip HTML tags and entities like &nbsp;
+    const text = slide.description
+      .replace(/<[^>]+>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+    return text.length > 120 ? text.substring(0, 120) + '...' : text;
+  };
   const getImage = (slide) => apiData ? slide.image : slide.image;
 
   const goToPrev = () => {
@@ -74,6 +88,12 @@ const Suggestions = () => {
     }
   };
 
+  const handleSlideClick = (slide) => {
+    if (onSelectDestination && slide.rawData) {
+      onSelectDestination(slide.rawData);
+    }
+  };
+
   const current = slidesData[currentSlide];
 
   return (
@@ -104,7 +124,12 @@ const Suggestions = () => {
             <span className="info-tag">{getTag(current)}</span>
             <h2 className="info-title">{getTitle(current)}</h2>
             <p className="info-description">{getDesc(current)}</p>
-            <a href="#" className="info-link" aria-label={t('readMore')}>
+            <a
+              href="#"
+              className="info-link"
+              aria-label={t('readMore')}
+              onClick={(e) => { e.preventDefault(); handleSlideClick(current); }}
+            >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
                 <polyline points="12 5 19 12 12 19"></polyline>
