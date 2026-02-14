@@ -1,20 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './CategoryDetail.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
+import { mediaUrl, localize } from '../services/api';
 
 const CategoryDetail = ({ item, onClose, category }) => {
   const { language, isRTL } = useLanguage();
   const t = (key) => getTranslation(language, key);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
 
   if (!item) return null;
+
+  const displayImage = item.image_url ? mediaUrl(item.image_url) : (item.image || '');
+  const displayTitle = item.name_en ? localize(item, 'name', language) : t(item.titleKey || item.nameKey);
+  const displayInfo = item.info_en ? localize(item, 'info', language) : null;
+  const displayTag = item.categories && item.categories.length > 0 
+    ? (language === 'ar' ? (item.categories[0].name_ar || item.categories[0].name_en) : item.categories[0].name_en)
+    : (item.tagKey ? t(item.tagKey) : null);
+
+  const galleryItems = item.gallery || [];
+
+  const handleNext = (e) => {
+    e.stopPropagation();
+    setLightboxIndex((prev) => (prev + 1) % galleryItems.length);
+  };
+
+  const handlePrev = (e) => {
+    e.stopPropagation();
+    setLightboxIndex((prev) => (prev - 1 + galleryItems.length) % galleryItems.length);
+  };
 
   return (
     <div className={`category-detail-overlay ${isRTL ? 'rtl' : ''}`}>
       <div className="category-detail-content">
         {/* Hero Image */}
         <div className="detail-hero">
-          <img src={item.image.replace('w=600', 'w=1400')} alt={t(item.titleKey || item.nameKey)} />
+          <img 
+            src={displayImage.includes('w=600') ? displayImage.replace('w=600', 'w=1400') : displayImage} 
+            alt={displayTitle} 
+          />
           <div className="detail-hero-gradient"></div>
           <button className="detail-close-btn" onClick={onClose}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -23,8 +47,8 @@ const CategoryDetail = ({ item, onClose, category }) => {
             </svg>
           </button>
           <div className="detail-hero-info">
-            {item.tagKey && <span className="detail-tag">{t(item.tagKey)}</span>}
-            <h1>{t(item.titleKey || item.nameKey)}</h1>
+            {displayTag && <span className="detail-tag">{displayTag}</span>}
+            <h1>{displayTitle}</h1>
             {item.region && <span className="detail-region">{item.region}</span>}
           </div>
         </div>
@@ -35,7 +59,12 @@ const CategoryDetail = ({ item, onClose, category }) => {
             <section className="detail-section">
               <h2>{t('information')}</h2>
               <div className="section-underline-small"></div>
-              {item.descKey ? (
+              {displayInfo ? (
+                <div 
+                  className="rich-text-content" 
+                  dangerouslySetInnerHTML={{ __html: displayInfo }}
+                />
+              ) : item.descKey ? (
                 <p>{t(item.descKey)}</p>
               ) : (
                 <p>
@@ -52,8 +81,25 @@ const CategoryDetail = ({ item, onClose, category }) => {
               )}
             </section>
 
+            {galleryItems.length > 0 && (
+              <section className="detail-section">
+                <h2>{t('photoGallery')}</h2>
+                <div className="section-underline-small"></div>
+                <div className="detail-gallery-grid">
+                  {galleryItems.map((img, idx) => (
+                    <div key={idx} className="gallery-item" onClick={() => setLightboxIndex(idx)}>
+                      <img 
+                        src={mediaUrl(img.image_url)} 
+                        alt={`${displayTitle} gallery ${idx + 1}`} 
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <section className="detail-section">
-              <h2>{t('eventPlace')}</h2>
+              <h2>{t('location')}</h2>
               <div className="section-underline-small"></div>
               <div className="detail-info-grid">
                 <div className="info-item">
@@ -77,6 +123,31 @@ const CategoryDetail = ({ item, onClose, category }) => {
           </aside>
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightboxIndex !== null && (
+        <div className="detail-lightbox" onClick={() => setLightboxIndex(null)}>
+          <button className="lightbox-close" onClick={() => setLightboxIndex(null)}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          
+          <button className="lightbox-nav lightbox-prev" onClick={handlePrev}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          
+          <div className="lightbox-content" onClick={e => e.stopPropagation()}>
+            <img src={mediaUrl(galleryItems[lightboxIndex].image_url)} alt="Gallery Large" />
+            <div className="lightbox-counter">{lightboxIndex + 1} / {galleryItems.length}</div>
+          </div>
+          
+          <button className="lightbox-nav lightbox-next" onClick={handleNext}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

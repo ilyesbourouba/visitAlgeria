@@ -1,177 +1,147 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './DiscoverPage.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
+import { fetchAPI, localize, mediaUrl } from '../services/api';
 
 const DiscoverPage = ({ onClose, onOpenCategory }) => {
   const { language, isRTL } = useLanguage();
   const t = (key) => getTranslation(language, key);
 
-  const artCultureItems = [
-    {
-      id: 'crafts',
-      titleKey: 'traditionalCrafts',
-      descKey: 'traditionalCraftsDesc',
-      image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=800&fit=crop"
-    },
-    {
-      id: 'music',
-      titleKey: 'musicAndRhythms',
-      descKey: 'musicAndRhythmsDesc',
-      image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&fit=crop"
-    },
-    {
-      id: 'events',
-      titleKey: 'culturalEvents',
-      descKey: 'culturalEventsDesc',
-      image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&fit=crop"
-    }
-  ];
+  const [pageSettings, setPageSettings] = useState(null);
+  const [sections, setSections] = useState([]);
+  const [sectionPlaces, setSectionPlaces] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  const architectureItems = [
-    {
-      id: 'casbah',
-      titleKey: 'casbahAlgiers',
-      tagKey: 'unescoHeritage',
-      image: "https://images.unsplash.com/photo-1583422409516-2895a77efded?w=800&fit=crop",
-      size: "large"
-    },
-    {
-      id: 'mosque',
-      titleKey: 'greatMosque',
-      tagKey: 'modernity',
-      image: "https://images.unsplash.com/photo-1542662565-7e4b66bae529?w=600&fit=crop",
-      size: "small"
-    },
-    {
-      id: 'constantine',
-      titleKey: 'constantine',
-      tagKey: 'suspendedBridges',
-      image: "https://images.unsplash.com/photo-1565967511849-76a60a516170?w=600&fit=crop",
-      size: "small"
-    },
-    {
-      id: 'timgad',
-      titleKey: 'timgadRuins',
-      tagKey: 'romanHistory',
-      image: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800&fit=crop",
-      size: "medium"
-    }
-  ];
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Fetch page settings and sections in parallel
+        const [settingsData, sectionsData] = await Promise.all([
+          fetchAPI('/discover-system/page-settings'),
+          fetchAPI('/discover-system/sections')
+        ]);
 
-  const museumItems = [
-    { id: 'bardo', nameKey: 'bardoMuseum', image: "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=600&fit=crop" },
-    { id: 'finearts', nameKey: 'fineArtsMuseum', image: "https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=600&fit=crop" },
-    { id: 'cirta', nameKey: 'cirtaMuseum', image: "https://images.unsplash.com/photo-1572953108238-fd75adfff571?w=600&fit=crop" },
-    { id: 'mama', nameKey: 'mamaAlgiers', image: "https://images.unsplash.com/photo-1564391802241-dfca4001bc67?w=600&fit=crop" }
-  ];
+        if (settingsData) setPageSettings(settingsData);
+        
+        if (sectionsData && sectionsData.length > 0) {
+          const activeSections = sectionsData.filter(s => s.is_active);
+          setSections(activeSections);
+          
+          // Fetch places for each section
+          const placesMap = {};
+          for (const section of activeSections) {
+            const placesData = await fetchAPI(`/discover-system/sections/${section.id}/places`);
+            if (placesData) {
+              placesMap[section.id] = placesData;
+            }
+          }
+          setSectionPlaces(placesMap);
+        }
+      } catch (err) {
+        console.error('Error loading discover data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
-  const handleOpenCategory = (category) => {
+  const handleOpenCategory = (section) => {
     if (onOpenCategory) {
-      onOpenCategory(category);
+      onOpenCategory(section);
     }
   };
 
+  const getSettingValue = (key) => {
+    if (!pageSettings) return '';
+    const langKey = `${key}_${language}`;
+    return pageSettings[langKey] || pageSettings[`${key}_en`] || '';
+  };
+
+  if (loading) {
+    return (
+      <div className={`discover-page-overlay ${isRTL ? 'rtl' : ''}`}>
+        <div className="discover-page-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+          <div className="loading">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`discover-page-overlay ${isRTL ? 'rtl' : ''}`}>
-      <div className="discover-page-content">
-        <button className="page-close-btn" onClick={onClose} aria-label={t('close')}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-
         <section className="discover-hero-modern">
+          <div 
+            className="hero-background-layer"
+            style={pageSettings?.background_image ? { 
+              backgroundImage: `url(${mediaUrl(pageSettings.background_image)})`
+            } : {}}
+          />
+          <div className="hero-overlay-cinematic"></div>
           <div className="hero-text-content">
-            <span className="hero-tag">{t('discoverAlgeriaNow')}</span>
-            <h1>{t('discover')}<br />{t('destinations')}</h1>
-            <p>{t('discoverDescription')}</p>
+            <span className="hero-tag">{getSettingValue('tag')}</span>
+            <h1>{getSettingValue('title')}</h1>
+            <p>{getSettingValue('subtitle')}</p>
           </div>
         </section>
 
-        {/* Art & Culture Section */}
-        <section className="discover-section art-culture-section">
-          <div className="section-header-with-underline">
-            <h2 className="section-title-modern">{t('artAndCulture')}</h2>
-            <div className="section-underline"></div>
-          </div>
-          <div className="art-grid">
-            {artCultureItems.map(item => (
-              <div key={item.id} className="art-card" onClick={() => handleOpenCategory('art')}>
-                <div className="art-card-media">
-                  <img src={item.image} alt={t(item.titleKey)} />
+        <div className="discover-page-content">
+          <button className="page-close-btn" onClick={onClose} aria-label={t('close')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+
+        {sections.map(section => {
+          const places = sectionPlaces[section.id] || [];
+          if (places.length === 0) return null;
+
+          return (
+            <section key={section.id} className="discover-section art-culture-section">
+              <div className="architecture-header">
+                <div className="section-header-with-underline">
+                  <h2 className="section-title-modern">{localize(section, 'name', language)}</h2>
+                  <div className="section-underline"></div>
                 </div>
-                <div className="art-card-info">
-                  <h3>{t(item.titleKey)}</h3>
-                  <p>{t(item.descKey)}</p>
-                  <button className="learn-more-link" onClick={(e) => { e.stopPropagation(); handleOpenCategory('art'); }}>
-                    {t('learnMore')} <span className="arrow">→</span>
-                  </button>
-                </div>
+                <button className="view-all-btn" onClick={() => handleOpenCategory(section, true)}>
+                  {t('viewAll')} →
+                </button>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Architecture Section */}
-        <section className="discover-section architecture-section">
-          <div className="architecture-header">
-            <div className="section-header-with-underline">
-              <h2 className="section-title-modern">{t('architecture')}</h2>
-              <div className="section-underline"></div>
-            </div>
-            <button className="view-all-btn" onClick={() => handleOpenCategory('architecture')}>
-              {t('viewAllArchitecture')} →
-            </button>
-          </div>
-          <div className="arch-bento-grid">
-            {architectureItems.map(item => (
-              <div key={item.id} className={`arch-item ${item.size}`} onClick={() => handleOpenCategory('architecture')}>
-                <div className="arch-wrapper">
-                  <img src={item.image} alt={t(item.titleKey)} />
-                  <div className="arch-overlay">
-                    <span className="arch-tag">{t(item.tagKey)}</span>
-                    <h3>{t(item.titleKey)}</h3>
+              <div className="art-grid">
+                {places.slice(0, 4).map(place => (
+                  <div key={place.id} className="art-card" onClick={() => handleOpenCategory(section, true)}>
+                    <div className="art-card-media">
+                      <img src={place.image_url ? mediaUrl(place.image_url) : ''} alt={localize(place, 'name', language)} />
+                    </div>
+                    <div className="art-card-info">
+                      <h3>{localize(place, 'name', language)}</h3>
+                      {place.categories && place.categories.length > 0 && (
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                          {place.categories.map((cat, idx) => (
+                            <span key={idx} style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.15)', padding: '2px 8px', borderRadius: '12px', color: 'rgba(255,255,255,0.8)' }}>
+                              {language === 'ar' ? (cat.name_ar || cat.name_en) : cat.name_en}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {place.region && (
+                        <p style={{ fontSize: '0.85rem', opacity: 0.7 }}>{place.region}</p>
+                      )}
+                      <button className="learn-more-link" onClick={(e) => { e.stopPropagation(); handleOpenCategory(section, true); }}>
+                        {t('learnMore')} <span className="arrow">→</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Museums Section */}
-        <section className="discover-section museums-section">
-          <div className="museums-header">
-            <div className="section-header-with-underline">
-              <h2 className="section-title-modern">{t('museums')}</h2>
-              <div className="section-underline"></div>
-            </div>
-            <button className="view-all-btn" onClick={() => handleOpenCategory('museums')}>
-              {t('viewAll')} →
-            </button>
-          </div>
-          <div className="museums-grid">
-            {museumItems.map(museum => (
-              <div key={museum.id} className="museum-card-modern" onClick={() => handleOpenCategory('museums')}>
-                <div className="museum-card-image">
-                  <img src={museum.image} alt={t(museum.nameKey)} />
-                  <div className="museum-card-gradient"></div>
-                </div>
-                <div className="museum-card-content">
-                  <h3>{t(museum.nameKey)}</h3>
-                  <button className="museum-explore-btn">
-                    {t('learnMore')} <span className="arrow">→</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+            </section>
+          );
+        })}
       </div>
     </div>
   );
 };
 
 export default DiscoverPage;
-

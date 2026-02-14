@@ -14,13 +14,15 @@ const fallbackSites = [
   { nameKey: 'unSiteBeniHammad', yearKey: 'unYearBeniHammad', image: 'https://images.unsplash.com/photo-1565967511849-76a60a516170?w=800&fit=crop' },
 ];
 
-const UnescoHeritage = () => {
+const UnescoHeritage = ({ onExploreUNESCO }) => {
   const { language, isRTL } = useLanguage();
   const t = (key) => getTranslation(language, key);
-
+ 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [apiData, setApiData] = useState(null);
+  const [featuredUnescoPlaces, setFeaturedUnescoPlaces] = useState(null);
+  const [unescoSection, setUnescoSection] = useState(null);
 
   // Drag/Swipe state
   const [isDragging, setIsDragging] = useState(false);
@@ -29,24 +31,53 @@ const UnescoHeritage = () => {
   const carouselRef = useRef(null);
 
   useEffect(() => {
+    // Fetch existing unesco-sites
     fetchAPI('/unesco-sites').then(data => {
       if (data && data.length > 0) {
         setApiData(data.filter(s => s.is_active).sort((a, b) => a.sort_order - b.sort_order));
       }
     });
+
+    // Also try featured UNESCO places from new system
+    fetchAPI('/discover-system/featured').then(data => {
+      if (data && data.unesco && data.unesco.length > 0) {
+        setFeaturedUnescoPlaces(data.unesco);
+      }
+    });
+
+    // Fetch sections to find the UNESCO one for navigation
+    fetchAPI('/discover-system/sections').then(data => {
+      if (data && data.length > 0) {
+        const found = data.find(s => 
+          s.name_en === 'UNESCO World Heritage' || 
+          s.name_en === 'UNESCO Heritage' ||
+          s.name_en.toLowerCase().includes('unesco')
+        );
+        if (found) setUnescoSection(found);
+      }
+    });
   }, []);
 
-  const sites = apiData
-    ? apiData.map(s => ({
-        name: localize(s, 'name', language),
-        year: language === 'ar' ? (s.year_inscribed_ar || s.year_inscribed) : s.year_inscribed,
-        image: s.image_url ? mediaUrl(s.image_url) : '',
+  // Prefer featured UNESCO places from new system, fallback to old unesco_sites, then static fallback
+  const useFeaturedUnesco = featuredUnescoPlaces && featuredUnescoPlaces.length > 0;
+
+  const sites = useFeaturedUnesco
+    ? featuredUnescoPlaces.map(p => ({
+        name: localize(p, 'name', language),
+        year: p.region || '',
+        image: p.image_url ? mediaUrl(p.image_url) : '',
       }))
-    : fallbackSites.map(s => ({
-        name: t(s.nameKey),
-        year: t(s.yearKey),
-        image: s.image,
-      }));
+    : apiData
+      ? apiData.map(s => ({
+          name: localize(s, 'name', language),
+          year: language === 'ar' ? (s.year_inscribed_ar || s.year_inscribed) : s.year_inscribed,
+          image: s.image_url ? mediaUrl(s.image_url) : '',
+        }))
+      : fallbackSites.map(s => ({
+          name: t(s.nameKey),
+          year: t(s.yearKey),
+          image: s.image,
+        }));
 
   const handlePrev = () => {
     if (isTransitioning) return;
@@ -183,7 +214,12 @@ const UnescoHeritage = () => {
           <p>{t('unDescription')}</p>
 
           <div className="unesco-button-group">
-            <a href="#" className="unesco-btn unesco-btn-fill">{t('unCtaExplore')}</a>
+            <button 
+              className="unesco-btn unesco-btn-fill"
+              onClick={() => onExploreUNESCO && unescoSection && onExploreUNESCO(unescoSection)}
+            >
+              {t('unCtaExplore')}
+            </button>
           </div>
         </div>
 

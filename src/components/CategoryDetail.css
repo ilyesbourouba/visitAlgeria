@@ -111,11 +111,17 @@
 /* Body */
 .detail-body {
     display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 60px;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 80px;
     padding: 60px 5% 100px;
     max-width: 1400px;
     margin: 0 auto;
+}
+
+.detail-main {
+    max-width: 100%;
+    overflow: hidden;
+    /* Prevent children from expanding container */
 }
 
 .detail-section {
@@ -254,5 +260,205 @@
 
     .detail-info-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Rich Text Content Styling */
+.rich-text-content {
+    color: var(--text-secondary);
+    max-width: 800px;
+    width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.rich-text-content * {
+    background-color: transparent !important;
+    color: inherit !important;
+    max-width: 100%;
+    overflow-wrap: break-word;
+}
+
+.rich-text-content h1,
+.rich-text-content h2,
+.rich-text-content h3 {
+    color: var(--text-primary);
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.rich-text-content p {
+    margin-bottom: 1rem;
+}
+
+.rich-text-content ul,
+.rich-text-content ol {
+    padding-left: 20px;
+    margin-bottom: 1rem;
+}
+
+.rich-text-content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Photo Gallery Enhancement */
+.detail-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    /* Exactly 5 per row */
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.gallery-item {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+/* Lightbox Styles */
+.detail-lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 8px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    object-fit: contain;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    z-index: 5010;
+}
+
+.lightbox-close:hover {
+    background: var(--accent-color);
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    z-index: 5005;
+}
+
+.lightbox-nav:hover {
+    background: var(--accent-color);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.lightbox-prev {
+    left: 40px;
+}
+
+.lightbox-next {
+    right: 40px;
+}
+
+.lightbox-nav svg {
+    width: 30px;
+    height: 30px;
+}
+
+.lightbox-counter {
+    margin-top: 20px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsive adjustments for gallery */
+@media (max-width: 1200px) {
+    .detail-gallery-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .detail-gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .detail-gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }

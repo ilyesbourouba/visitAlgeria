@@ -21,6 +21,7 @@ const tourLocationsRoutes = require('./routes/tourLocations');
 const tourGuideHeroRoutes = require('./routes/tourGuideHero');
 const settingsRoutes = require('./routes/settings');
 const discoverRoutes = require('./routes/discover');
+const discoverSystemRoutes = require('./routes/discoverSystem');
 const calendarRoutes = require('./routes/calendar');
 const uploadRoutes = require('./routes/upload');
 const createCrudRouter = require('./helpers/crud');
@@ -33,6 +34,7 @@ app.use('/api/tour-locations', tourLocationsRoutes);
 app.use('/api/tour-guide-hero', tourGuideHeroRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/discover', discoverRoutes);
+app.use('/api/discover-system', discoverSystemRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/upload', uploadRoutes);
 

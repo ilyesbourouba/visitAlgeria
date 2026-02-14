@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../api';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 const API_BASE = 'http://localhost:5000';
 
@@ -10,7 +12,7 @@ const API_BASE = 'http://localhost:5000';
  *  - Pagination
  *  - Media preview in modals
  */
-const CrudPage = ({ title, endpoint, columns, formFields }) => {
+const CrudPage = ({ title, endpoint, columns, formFields, transformBeforeSave }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -105,9 +107,11 @@ const CrudPage = ({ title, endpoint, columns, formFields }) => {
     setSaving(true);
     try {
       if (editingItem) {
-        await api.put(`${endpoint}/${editingItem.id}`, formData);
+        const payload = transformBeforeSave ? transformBeforeSave({ ...formData }) : formData;
+        await api.put(`${endpoint}/${editingItem.id}`, payload);
       } else {
-        await api.post(endpoint, formData);
+        const payload = transformBeforeSave ? transformBeforeSave({ ...formData }) : formData;
+        await api.post(endpoint, payload);
       }
       setShowModal(false);
       fetchItems();
@@ -212,12 +216,25 @@ const CrudPage = ({ title, endpoint, columns, formFields }) => {
       return (
         <select
           value={val}
-          onChange={e => handleChange(field.key, e.target.value)}
+          onChange={e => {
+            const v = e.target.value;
+            // If options are objects with value/label, parse numeric values
+            const opts = field.options || [];
+            if (opts.length > 0 && typeof opts[0] === 'object') {
+              const numVal = Number(v);
+              handleChange(field.key, isNaN(numVal) ? v : numVal);
+            } else {
+              handleChange(field.key, v);
+            }
+          }}
         >
           <option value="">Select...</option>
-          {(field.options || []).map(opt => (
-            <option key={opt} value={opt}>{opt}</option>
-          ))}
+          {(field.options || []).map(opt => {
+            if (typeof opt === 'object' && opt.value !== undefined) {
+              return <option key={opt.value} value={opt.value}>{opt.label}</option>;
+            }
+            return <option key={opt} value={opt}>{opt}</option>;
+          })}
         </select>
       );
     }
@@ -364,8 +381,12 @@ const CrudPage = ({ title, endpoint, columns, formFields }) => {
       );
     }
 
-    // TAGS (array of { tag_en, tag_ar })
+    // TAGS (array of { tag_en, tag_ar } or { name_en, name_ar })
     if (field.type === 'tags') {
+      const keyEn = field.tagKeyEn || 'tag_en';
+      const keyAr = field.tagKeyAr || 'tag_ar';
+      const labelEn = field.tagLabelEn || 'Tag (English)';
+      const labelAr = field.tagLabelAr || 'Tag (Arabic)';
       const tags = Array.isArray(formData[field.key]) ? formData[field.key] : [];
       return (
         <div className="tags-field">
@@ -373,23 +394,23 @@ const CrudPage = ({ title, endpoint, columns, formFields }) => {
             <div key={idx} className="tag-row">
               <input
                 type="text"
-                value={tag.tag_en || ''}
+                value={tag[keyEn] || ''}
                 onChange={e => {
                   const updated = [...tags];
-                  updated[idx] = { ...updated[idx], tag_en: e.target.value };
+                  updated[idx] = { ...updated[idx], [keyEn]: e.target.value };
                   handleChange(field.key, updated);
                 }}
-                placeholder="Tag (English)"
+                placeholder={labelEn}
               />
               <input
                 type="text"
-                value={tag.tag_ar || ''}
+                value={tag[keyAr] || ''}
                 onChange={e => {
                   const updated = [...tags];
-                  updated[idx] = { ...updated[idx], tag_ar: e.target.value };
+                  updated[idx] = { ...updated[idx], [keyAr]: e.target.value };
                   handleChange(field.key, updated);
                 }}
-                placeholder="Tag (Arabic)"
+                placeholder={labelAr}
               />
               <button
                 type="button"
@@ -404,8 +425,34 @@ const CrudPage = ({ title, endpoint, columns, formFields }) => {
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            onClick={() => handleChange(field.key, [...tags, { tag_en: '', tag_ar: '' }])}
-          >+ Add Tag</button>
+            onClick={() => handleChange(field.key, [...tags, { [keyEn]: '', [keyAr]: '' }])}
+          >+ Add {field.tagLabelEn ? field.tagLabelEn.replace(' (EN)', '').replace(' (English)', '') : 'Tag'}</button>
+        </div>
+      );
+    }
+
+    // RICHTEXT (rich text editor)
+    if (field.type === 'richtext') {
+      const quillModules = {
+        toolbar: [
+          [{ 'header': [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          [{ 'color': [] }, { 'background': [] }],
+          [{ 'align': [] }],
+          ['link', 'blockquote'],
+          ['clean']
+        ],
+      };
+      return (
+        <div className="richtext-field">
+          <ReactQuill
+            theme="snow"
+            value={val || ''}
+            onChange={(content) => handleChange(field.key, content)}
+            modules={quillModules}
+            style={{ minHeight: '200px' }}
+          />
         </div>
       );
     }

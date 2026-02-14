@@ -1,68 +1,71 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './CategoryPage.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
-
-// Data for each category
-const categoryData = {
-  art: {
-    titleKey: 'artAndCulture',
-    items: [
-      { id: 'crafts', titleKey: 'traditionalCrafts', descKey: 'traditionalCraftsDesc', region: 'Ghardaia', type: 'crafts', image: 'https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=600&fit=crop' },
-      { id: 'music', titleKey: 'musicAndRhythms', descKey: 'musicAndRhythmsDesc', region: 'Oran', type: 'music', image: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=600&fit=crop' },
-      { id: 'events', titleKey: 'culturalEvents', descKey: 'culturalEventsDesc', region: 'Algiers', type: 'events', image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&fit=crop' },
-      { id: 'pottery', titleKey: 'traditionalCrafts', descKey: 'traditionalCraftsDesc', region: 'Kabylie', type: 'crafts', image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&fit=crop' },
-      { id: 'dance', titleKey: 'culturalEvents', descKey: 'culturalEventsDesc', region: 'Tamanrasset', type: 'events', image: 'https://images.unsplash.com/photo-1504609813442-a8924e83f76e?w=600&fit=crop' },
-    ]
-  },
-  architecture: {
-    titleKey: 'architecture',
-    items: [
-      { id: 'casbah', titleKey: 'casbahAlgiers', tagKey: 'unescoHeritage', region: 'Algiers', type: 'heritage', image: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&fit=crop' },
-      { id: 'mosque', titleKey: 'greatMosque', tagKey: 'modernity', region: 'Algiers', type: 'religious', image: 'https://images.unsplash.com/photo-1542662565-7e4b66bae529?w=600&fit=crop' },
-      { id: 'constantine', titleKey: 'constantine', tagKey: 'suspendedBridges', region: 'Constantine', type: 'heritage', image: 'https://images.unsplash.com/photo-1565967511849-76a60a516170?w=600&fit=crop' },
-      { id: 'timgad', titleKey: 'timgadRuins', tagKey: 'romanHistory', region: 'Batna', type: 'heritage', image: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=600&fit=crop' },
-    ]
-  },
-  museums: {
-    titleKey: 'museums',
-    items: [
-      { id: 'bardo', titleKey: 'bardoMuseum', region: 'Algiers', type: 'history', image: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=600&fit=crop' },
-      { id: 'finearts', titleKey: 'fineArtsMuseum', region: 'Algiers', type: 'art', image: 'https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=600&fit=crop' },
-      { id: 'cirta', titleKey: 'cirtaMuseum', region: 'Constantine', type: 'history', image: 'https://images.unsplash.com/photo-1572953108238-fd75adfff571?w=600&fit=crop' },
-      { id: 'mama', titleKey: 'mamaAlgiers', region: 'Algiers', type: 'contemporary', image: 'https://images.unsplash.com/photo-1564391802241-dfca4001bc67?w=600&fit=crop' },
-    ]
-  }
-};
+import { fetchAPI, localize, mediaUrl } from '../services/api';
 
 const CategoryPage = ({ category, onClose, onSelectItem }) => {
   const { language, isRTL } = useLanguage();
   const t = (key) => getTranslation(language, key);
 
+  const [places, setPlaces] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState('all');
-  const [selectedType, setSelectedType] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const data = categoryData[category] || categoryData.art;
+  // category can be a section object {id, name_en, name_ar} or a legacy string
+  const sectionId = typeof category === 'object' ? category.id : null;
+  const sectionTitle = typeof category === 'object' 
+    ? localize(category, 'name', language) 
+    : t(category === 'art' ? 'artAndCulture' : category === 'architecture' ? 'architecture' : 'museums');
 
-  // Get unique regions and types for filters
+  useEffect(() => {
+    const loadPlaces = async () => {
+      setLoading(true);
+      try {
+        if (sectionId) {
+          const data = await fetchAPI(`/discover-system/sections/${sectionId}/places`);
+          if (data) setPlaces(data);
+        }
+      } catch (err) {
+        console.error('Error loading places:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPlaces();
+  }, [sectionId]);
+
+  // Get unique regions and categories for filters
   const regions = useMemo(() => {
-    const unique = [...new Set(data.items.map(item => item.region))];
+    const unique = [...new Set(places.map(p => p.region).filter(Boolean))];
     return ['all', ...unique];
-  }, [data.items]);
+  }, [places]);
 
-  const types = useMemo(() => {
-    const unique = [...new Set(data.items.map(item => item.type))];
-    return ['all', ...unique];
-  }, [data.items]);
-
-  // Filter items
-  const filteredItems = useMemo(() => {
-    return data.items.filter(item => {
-      const regionMatch = selectedRegion === 'all' || item.region === selectedRegion;
-      const typeMatch = selectedType === 'all' || item.type === selectedType;
-      return regionMatch && typeMatch;
+  const categoryOptions = useMemo(() => {
+    const allCats = [];
+    places.forEach(p => {
+      if (p.categories) {
+        p.categories.forEach(cat => {
+          const name = language === 'ar' ? (cat.name_ar || cat.name_en) : cat.name_en;
+          if (name && !allCats.includes(name)) allCats.push(name);
+        });
+      }
     });
-  }, [data.items, selectedRegion, selectedType]);
+    return ['all', ...allCats];
+  }, [places, language]);
+
+  // Filter places
+  const filteredPlaces = useMemo(() => {
+    return places.filter(place => {
+      const regionMatch = selectedRegion === 'all' || place.region === selectedRegion;
+      const catMatch = selectedCategory === 'all' || (place.categories && place.categories.some(cat => {
+        const name = language === 'ar' ? (cat.name_ar || cat.name_en) : cat.name_en;
+        return name === selectedCategory;
+      }));
+      return regionMatch && catMatch;
+    });
+  }, [places, selectedRegion, selectedCategory, language]);
 
   return (
     <div className={`category-page-overlay ${isRTL ? 'rtl' : ''}`}>
@@ -73,9 +76,9 @@ const CategoryPage = ({ category, onClose, onSelectItem }) => {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
-            {t('backToHome')}
+            {t('backToDiscover')}
           </button>
-          <h1>{t(data.titleKey)}</h1>
+          <h1>{sectionTitle}</h1>
           <div className="header-underline"></div>
         </header>
 
@@ -93,41 +96,51 @@ const CategoryPage = ({ category, onClose, onSelectItem }) => {
           </div>
           <div className="filter-group">
             <label>{t('filterByType')}</label>
-            <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)}>
-              {types.map(type => (
-                <option key={type} value={type}>
-                  {type === 'all' ? t('allTypes') : type}
+            <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+              {categoryOptions.map(cat => (
+                <option key={cat} value={cat}>
+                  {cat === 'all' ? t('allTypes') : cat}
                 </option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Items Grid */}
-        <div className="category-items-grid">
-          {filteredItems.map(item => (
-            <div
-              key={item.id}
-              className="category-item-card"
-              onClick={() => onSelectItem && onSelectItem(item)}
-            >
-              <div className="item-card-image">
-                <img src={item.image} alt={t(item.titleKey)} />
-                <div className="item-card-gradient"></div>
-              </div>
-              <div className="item-card-content">
-                {item.tagKey && <span className="item-tag">{t(item.tagKey)}</span>}
-                <h3>{t(item.titleKey)}</h3>
-                <span className="item-region">{item.region}</span>
-              </div>
+        {loading ? (
+          <div className="loading" style={{ textAlign: 'center', padding: '40px' }}>Loading...</div>
+        ) : (
+          <>
+            {/* Items Grid */}
+            <div className="category-items-grid">
+              {filteredPlaces.map(place => (
+                <div
+                  key={place.id}
+                  className="category-item-card"
+                  onClick={() => onSelectItem && onSelectItem(place)}
+                >
+                  <div className="item-card-image">
+                    <img src={place.image_url ? mediaUrl(place.image_url) : ''} alt={localize(place, 'name', language)} />
+                    <div className="item-card-gradient"></div>
+                  </div>
+                  <div className="item-card-content">
+                    {place.categories && place.categories.length > 0 && (
+                      <span className="item-tag">
+                        {language === 'ar' ? (place.categories[0].name_ar || place.categories[0].name_en) : place.categories[0].name_en}
+                      </span>
+                    )}
+                    <h3>{localize(place, 'name', language)}</h3>
+                    {place.region && <span className="item-region">{place.region}</span>}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {filteredItems.length === 0 && (
-          <div className="no-results">
-            <p>No items found matching your filters.</p>
-          </div>
+            {filteredPlaces.length === 0 && (
+              <div className="no-results">
+                <p>No items found matching your filters.</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

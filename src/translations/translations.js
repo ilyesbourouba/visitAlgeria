@@ -232,6 +232,7 @@ export const translations = {
     switchToDark: 'Switch to dark mode',
     readMore: 'Read More',
     learnMore: 'Learn More',
+    location: 'Location',
 
     // Themed Discovery Sections
     artAndCulture: 'Art & Culture',
@@ -263,6 +264,7 @@ export const translations = {
     filterByType: 'Filter by Type',
     allTypes: 'All Types',
     backToHome: 'Back to Home',
+    backToDiscover: 'Back to Discover',
 
     // Destination Page
     wilayasOfAlgeria: 'Wilayas of Algeria',
@@ -523,6 +525,7 @@ export const translations = {
     switchToDark: 'التبديل إلى الوضع الليلي',
     readMore: 'اقرأ المزيد',
     learnMore: 'اعرف المزيد',
+    location: 'الموقع',
 
     // Themed Discovery Sections
     artAndCulture: 'الفن والثقافة',
@@ -554,6 +557,7 @@ export const translations = {
     filterByType: 'تصفية حسب النوع',
     allTypes: 'جميع الأنواع',
     backToHome: 'العودة للرئيسية',
+    backToDiscover: 'العودة للاستكشاف',
 
     // Destination Page
     wilayasOfAlgeria: 'ولايات الجزائر',

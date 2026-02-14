@@ -17,35 +17,48 @@ const Discover = () => {
   const { language } = useLanguage();
   const t = (key) => getTranslation(language, key);
   const [cards, setCards] = useState(null);
+  const [featuredPlaces, setFeaturedPlaces] = useState(null);
 
   useEffect(() => {
+    // Fetch existing discover cards
     fetchAPI('/discover-cards').then(data => {
       if (data && data.length > 0) {
         setCards(data.filter(c => c.is_active).sort((a, b) => a.sort_order - b.sort_order));
       }
     });
+
+    // Also fetch featured homepage places from new system
+    fetchAPI('/discover-system/featured').then(data => {
+      if (data && data.homepage && data.homepage.length > 0) {
+        setFeaturedPlaces(data.homepage);
+      }
+    });
   }, []);
 
-  // Build card data — use API if available, fallback otherwise
-  const titleCard = cards
-    ? cards.find(c => c.card_size === 'title')
-    : fallbackCards[0];
-  const wideCard = cards
-    ? cards.find(c => c.card_size === 'wide')
-    : fallbackCards[1];
-  const narrowCard = cards
-    ? cards.find(c => c.card_size === 'narrow')
-    : fallbackCards[2];
+  // If we have featured places from the new system, use those
+  // Map: place[0] -> title card, place[1] -> wide card, place[2] -> narrow card
+  const useFeatured = featuredPlaces && featuredPlaces.length > 0;
+
+  const titleCard = useFeatured
+    ? featuredPlaces[0]
+    : (cards ? cards.find(c => c.card_size === 'title') : fallbackCards[0]);
+  const wideCard = useFeatured
+    ? (featuredPlaces[1] || featuredPlaces[0])
+    : (cards ? cards.find(c => c.card_size === 'wide') : fallbackCards[1]);
+  const narrowCard = useFeatured
+    ? (featuredPlaces[2] || featuredPlaces[0])
+    : (cards ? cards.find(c => c.card_size === 'narrow') : fallbackCards[2]);
 
   const getTitle = (card) => {
     if (!card) return '';
+    if (useFeatured) return localize(card, 'name', language);
     if (cards) return localize(card, 'title', language);
     return t(card.title_key);
   };
 
   const getImage = (card, fallback) => {
     if (!card) return fallback;
-    if (cards) return card.image_url ? mediaUrl(card.image_url) : fallback;
+    if (useFeatured || cards) return card.image_url ? mediaUrl(card.image_url) : fallback;
     return card.image || fallback;
   };
 

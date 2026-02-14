@@ -22,6 +22,12 @@ const eventsItems = [
   { path: '/events', label: 'Events', icon: '📅' },
 ];
 
+const discoverItems = [
+  { path: '/discover-sections', label: 'Sections', icon: '📑' },
+  { path: '/discover-places', label: 'Places', icon: '📍' },
+  { path: '/discover-page-settings', label: 'Page Settings', icon: '🎨' },
+];
+
 const standaloneItems = [
   { path: '/tour-locations', label: 'Tour Guide', icon: '🗺️' },
 ];
@@ -37,6 +43,7 @@ const Layout = () => {
   const location = useLocation();
   const [isHomePageExpanded, setIsHomePageExpanded] = useState(false);
   const [isEventsExpanded, setIsEventsExpanded] = useState(false);
+  const [isDiscoverExpanded, setIsDiscoverExpanded] = useState(false);
 
   // Auto-expand if current route is within a group
   useEffect(() => {
@@ -45,6 +52,9 @@ const Layout = () => {
     }
     if (eventsItems.some(item => location.pathname === item.path)) {
       setIsEventsExpanded(true);
+    }
+    if (discoverItems.some(item => location.pathname === item.path)) {
+      setIsDiscoverExpanded(true);
     }
   }, [location.pathname]);
 
@@ -110,6 +120,30 @@ const Layout = () => {
             </button>
             <div className="sidebar-submenu">
               {eventsItems.map(item => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) => `sidebar-link submenu-link ${isActive ? 'active' : ''}`}
+                >
+                  <span className="sidebar-icon">{item.icon}</span>
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+
+          {/* Discover group */}
+          <div className={`sidebar-group ${isDiscoverExpanded ? 'expanded' : ''}`}>
+            <button 
+              className="sidebar-group-header" 
+              onClick={() => setIsDiscoverExpanded(!isDiscoverExpanded)}
+            >
+              <span className="sidebar-icon">🔍</span>
+              <span className="group-label">Discover</span>
+              <span className="chevron"></span>
+            </button>
+            <div className="sidebar-submenu">
+              {discoverItems.map(item => (
                 <NavLink
                   key={item.path}
                   to={item.path}

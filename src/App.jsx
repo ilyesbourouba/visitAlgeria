@@ -33,11 +33,13 @@ function App() {
   const [showCategory, setShowCategory] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryItem, setSelectedCategoryItem] = useState(null);
+  const [openedFromDiscover, setOpenedFromDiscover] = useState(false);
 
-  const handleOpenCategory = (category) => {
+  const handleOpenCategory = (category, fromDiscover = false) => {
     setSelectedCategory(category);
     setShowCategory(true);
     setShowDiscover(false);
+    setOpenedFromDiscover(fromDiscover);
   };
 
   const handleOpenDiscover = () => {
@@ -45,18 +47,21 @@ function App() {
     setShowEvents(false);
     setShowInfo(false);
     setSelectedEvent(null);
+    setOpenedFromDiscover(false);
   };
 
   const handleOpenEvents = () => {
     setShowEvents(true);
     setSelectedEvent(null);
     setShowInfo(false);
+    setOpenedFromDiscover(false);
   };
 
   const handleOpenInfo = () => {
     setShowInfo(true);
     setShowEvents(false);
     setSelectedEvent(null);
+    setOpenedFromDiscover(false);
   };
 
   const handleOpenDestinations = () => {
@@ -66,6 +71,7 @@ function App() {
     setShowDiscover(false);
     setShowTourGuide(false);
     setSelectedEvent(null);
+    setOpenedFromDiscover(false);
   };
 
   const handleOpenTourGuide = () => {
@@ -74,6 +80,7 @@ function App() {
     setShowEvents(false);
     setShowDiscover(false);
     setSelectedEvent(null);
+    setOpenedFromDiscover(false);
   };
 
   const handleCloseAll = () => {
@@ -87,12 +94,18 @@ function App() {
     setSelectedCategory(null);
     setSelectedCategoryItem(null);
     setSelectedWilaya(null);
+    setOpenedFromDiscover(false);
   };
 
   const handleCloseCategoryPage = () => {
     setShowCategory(false);
     setSelectedCategory(null);
     setSelectedCategoryItem(null);
+    
+    // If we opened this from discover, go back to discover
+    if (openedFromDiscover) {
+      setShowDiscover(true);
+    }
   };
 
   return (
@@ -109,7 +122,7 @@ function App() {
         <Discover />
         <TopDestinations onOpenDestinations={handleOpenDestinations} />
         <Suggestions />
-        <UnescoHeritage />
+        <UnescoHeritage onExploreUNESCO={handleOpenCategory} />
         <UpcomingActivities 
           onViewAll={handleOpenEvents} 
           onSelectEvent={setSelectedEvent}

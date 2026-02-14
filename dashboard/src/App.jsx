@@ -16,6 +16,9 @@ import CalendarPage from './pages/Calendar';
 import DiscoverPage from './pages/Discover';
 import Settings from './pages/Settings';
 import Languages from './pages/Languages';
+import DiscoverSections from './pages/DiscoverSections';
+import DiscoverPlaces from './pages/DiscoverPlaces';
+import DiscoverPageSettings from './pages/DiscoverPageSettings';
 import './App.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -48,6 +51,9 @@ const App = () => {
             <Route path="panoramas" element={<Panoramas />} />
             <Route path="calendar" element={<CalendarPage />} />
             <Route path="discover" element={<DiscoverPage />} />
+            <Route path="discover-sections" element={<DiscoverSections />} />
+            <Route path="discover-places" element={<DiscoverPlaces />} />
+            <Route path="discover-page-settings" element={<DiscoverPageSettings />} />
             <Route path="settings" element={<Settings />} />
             <Route path="languages" element={<Languages />} />
           </Route>
