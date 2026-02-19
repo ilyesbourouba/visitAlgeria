@@ -5,8 +5,31 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// ===== CORS CONFIGURATION - MUST BE FIRST =====
+// Manual CORS handling for maximum compatibility
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
+
+// Request logger for debugging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -25,6 +48,10 @@ const discoverRoutes = require('./routes/discover');
 const discoverSystemRoutes = require('./routes/discoverSystem');
 const calendarRoutes = require('./routes/calendar');
 const uploadRoutes = require('./routes/upload');
+const digitalLibraryRoutes = require('./routes/digitalLibrary');
+const libraryCategoriesRoutes = require('./routes/libraryCategories');
+const hotelsRoutes = require('./routes/hotels');
+const travelAgenciesRoutes = require('./routes/travelAgencies');
 const createCrudRouter = require('./helpers/crud');
 
 // --- Mount specialized routes ---
@@ -39,6 +66,10 @@ app.use('/api/discover', discoverRoutes);
 app.use('/api/discover-system', discoverSystemRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/digital-library', digitalLibraryRoutes);
+app.use('/api/library-categories', libraryCategoriesRoutes);
+app.use('/api/hotels', hotelsRoutes);
+app.use('/api/travel-agencies', travelAgenciesRoutes);
 
 // --- Generic CRUD routes for simple tables ---
 app.use('/api/hero-slides', createCrudRouter('hero_slides'));
@@ -54,7 +85,22 @@ app.get('/api/health', (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log('visitAlgeria API running on http://localhost:' + PORT);
-});
+const PORT = process.env.PORT || 5001;
+const pool = require('./config/db');
+
+async function startServer() {
+  try {
+    const connection = await pool.getConnection();
+    console.log('Successfully connected to the database.');
+    connection.release();
+
+    app.listen(PORT, () => {
+      console.log('visitAlgeria API running on http://localhost:' + PORT);
+    });
+  } catch (err) {
+    console.error('Failed to connect to the database:', err.message);
+    process.exit(1);
+  }
+}
+
+startServer();

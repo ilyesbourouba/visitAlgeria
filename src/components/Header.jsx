@@ -6,7 +6,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
 
-const Header = ({ onInfoClick, onEventsClick, onDiscoverClick, onDestinationsClick, onTourGuideClick }) => {
+const Header = ({ onInfoClick, onEventsClick, onDiscoverClick, onDestinationsClick, onTourGuideClick, onDigitalLibraryClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -54,6 +54,9 @@ const Header = ({ onInfoClick, onEventsClick, onDiscoverClick, onDestinationsCli
             <a className="nav-link" href="#" onClick={(e) => { e.preventDefault(); onTourGuideClick(); }} style={{ textDecoration: 'none' }}>
               {t('tourGuide')}
             </a>
+            <button className="nav-link" onClick={onDigitalLibraryClick} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+              {t('digitalLibrary')}
+            </button>
           </nav>
         </div>
 
@@ -100,6 +103,9 @@ const Header = ({ onInfoClick, onEventsClick, onDiscoverClick, onDestinationsCli
         <a className="mobile-nav-link" href="#" onClick={(e) => { e.preventDefault(); onTourGuideClick(); setMobileMenuOpen(false); }} style={{ textDecoration: 'none' }}>
           {t('tourGuide')}
         </a>
+        <button className="mobile-nav-link" onClick={() => handleMobileNavClick(onDigitalLibraryClick)}>
+          {t('digitalLibrary')}
+        </button>
       </nav>
     </header>
   );

@@ -33,13 +33,13 @@ const upload = multer({
   storage,
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB for videos
   fileFilter: (req, file, cb) => {
-    const allowed = /jpeg|jpg|png|gif|webp|svg|mp4|webm|mov|avi|ogg/;
+    const allowed = /jpeg|jpg|png|gif|webp|svg|mp4|webm|mov|avi|ogg|pdf/;
     const ext = allowed.test(path.extname(file.originalname).toLowerCase());
-    const mimeOk = /image|video/.test(file.mimetype);
+    const mimeOk = /image|video|application\/pdf/.test(file.mimetype);
     if (ext && mimeOk) {
       cb(null, true);
     } else {
-      cb(new Error('Only image and video files are allowed'));
+      cb(new Error('Only image, video, and PDF files are allowed'));
     }
   }
 });

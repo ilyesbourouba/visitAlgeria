@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'; // For images
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001'; // For images
 
 const HeroSettingsEditor = () => {
   const [data, setData] = useState({

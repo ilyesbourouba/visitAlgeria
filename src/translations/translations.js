@@ -181,7 +181,7 @@ export const translations = {
     unYearBeniHammad: 'Inscribed 1980',
 
     // Tour Guide Section
-    tourGuide: 'Tour Guide',
+    tourGuide: 'Virtual Tour',
     vtBadge: 'VIRTUAL TOUR',
     vtHeadline: 'Algeria Virtual Heritage',
     vtSubtitle: 'Embark on an immersive journey through the ancient Casbahs, Sahara dunes, and Roman ruins from your home.',
@@ -223,6 +223,14 @@ export const translations = {
     uaTagBeach: 'Beach',
     uaTagNature: 'Nature',
     
+    // Digital Library
+    digitalLibrary: 'Digital Library',
+    digitalLibraryTitle: 'Digital Library',
+    searchLibrary: 'Search documents...',
+    downloadFile: 'Download',
+    viewFile: 'View',
+    noFilesFound: 'No documents found.',
+
     // Common
     close: 'Close',
     next: 'Next',
@@ -474,7 +482,7 @@ export const translations = {
     unYearBeniHammad: 'مُدرج 1980',
 
     // Tour Guide Section
-    tourGuide: 'الدليل السياحي',
+    tourGuide: 'الجولة الافتراضية',
     vtBadge: 'جولة افتراضية',
     vtHeadline: 'التراث الافتراضي الجزائري',
     vtSubtitle: 'انطلق في رحلة غامرة عبر القصبات القديمة، وكثبان الصحراء، والآثار الرومانية من منزلك.',
@@ -516,6 +524,14 @@ export const translations = {
     uaTagBeach: 'شاطئ',
     uaTagNature: 'طبيعة',
     
+    // Digital Library
+    digitalLibrary: 'المكتبة الرقمية',
+    digitalLibraryTitle: 'المكتبة الرقمية',
+    searchLibrary: 'البحث في الوثائق...',
+    downloadFile: 'تحميل',
+    viewFile: 'عرض',
+    noFilesFound: 'لم يتم العثور على وثائق.',
+
     // Common
     close: 'إغلاق',
     next: 'التالي',

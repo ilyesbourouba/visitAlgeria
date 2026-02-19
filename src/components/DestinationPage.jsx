@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'http://localhost:5001';
 
 // Wilaya coordinates for all 58 wilayas
 const WILAYA_COORDS = {
@@ -347,6 +347,7 @@ function DestinationPage({ onClose, onSelectWilaya, initialWilaya, onSelectPlace
             <WilayaDetailPage 
                 wilaya={detailWilaya} 
                 onBack={handleBackFromDetail}
+                onSelectPlace={onSelectPlace}
             />
         );
     }

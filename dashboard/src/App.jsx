@@ -19,6 +19,11 @@ import Languages from './pages/Languages';
 import DiscoverSections from './pages/DiscoverSections';
 import DiscoverPlaces from './pages/DiscoverPlaces';
 import DiscoverPageSettings from './pages/DiscoverPageSettings';
+import DigitalLibrary from './pages/DigitalLibrary';
+import LibraryCategories from './pages/LibraryCategories';
+import Hotels from './pages/Hotels';
+import TravelAgencies from './pages/TravelAgencies';
+import SocialMedia from './pages/SocialMedia';
 import './App.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -56,6 +61,11 @@ const App = () => {
             <Route path="discover-page-settings" element={<DiscoverPageSettings />} />
             <Route path="settings" element={<Settings />} />
             <Route path="languages" element={<Languages />} />
+            <Route path="digital-library" element={<DigitalLibrary />} />
+            <Route path="library-categories" element={<LibraryCategories />} />
+            <Route path="hotels" element={<Hotels />} />
+            <Route path="travel-agencies" element={<TravelAgencies />} />
+            <Route path="social-media" element={<SocialMedia />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -3,7 +3,7 @@ import api from '../api';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'http://localhost:5001';
 
 /**
  * Generic CRUD page with:
@@ -33,7 +33,8 @@ const CrudPage = ({ title, endpoint, columns, formFields, transformBeforeSave })
     try {
       setLoading(true);
       const res = await api.get(endpoint);
-      setItems(res.data);
+      const payload = res.data;
+      setItems(Array.isArray(payload) ? payload : (Array.isArray(payload.data) ? payload.data : []));
     } catch (err) {
       console.error('Fetch error:', err);
     } finally {
@@ -188,6 +189,13 @@ const CrudPage = ({ title, endpoint, columns, formFields, transformBeforeSave })
         </button>
       );
     }
+    if ((col.type === 'file') && val) {
+      const isPdf = /\.pdf(\?|$)/i.test(val);
+      if (isPdf) {
+        return <a href={getFullUrl(val)} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>📄 PDF</a>;
+      }
+      return <img src={getFullUrl(val)} alt="" className="table-thumb" onClick={() => setPreviewMedia({ url: getFullUrl(val), type: 'image' })} style={{ cursor: 'pointer' }} />;
+    }
     if (val === null || val === undefined) return '—';
     if (typeof val === 'string' && val.length > 60) return val.substring(0, 60) + '…';
     return String(val);
@@ -302,6 +310,35 @@ const CrudPage = ({ title, endpoint, columns, formFields, transformBeforeSave })
             <input
               type="file"
               accept="video/*"
+              onChange={e => handleFileUpload(field.key, e.target.files[0], field.folder || endpoint.replace('/', ''))}
+            />
+            {uploading[field.key] && <span className="upload-spinner">Uploading...</span>}
+          </div>
+        </div>
+      );
+    }
+
+    // FILE upload (PDF + images)
+    if (field.type === 'file') {
+      const isPdf = val && /\.pdf(\?|$)/i.test(val);
+      return (
+        <div className="upload-field">
+          {val && (
+            <div className="upload-preview">
+              {isPdf ? (
+                <a href={getFullUrl(val)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', background: 'var(--bg-secondary, #f5f5f5)', borderRadius: '8px', textDecoration: 'none', color: 'inherit' }}>
+                  <span style={{ fontSize: '28px' }}>📄</span>
+                  <span>View PDF</span>
+                </a>
+              ) : (
+                <img src={getFullUrl(val)} alt="Preview" onClick={() => setPreviewMedia({ url: getFullUrl(val), type: 'image' })} style={{ cursor: 'pointer' }} />
+              )}
+            </div>
+          )}
+          <div className="upload-controls">
+            <input
+              type="file"
+              accept="image/*,.pdf"
               onChange={e => handleFileUpload(field.key, e.target.files[0], field.folder || endpoint.replace('/', ''))}
             />
             {uploading[field.key] && <span className="upload-spinner">Uploading...</span>}

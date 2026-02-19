@@ -10,7 +10,7 @@ export const eventsData = [
     // Timgad Roman Theater - ancient amphitheater concert setting
     image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=600",
     descriptionKey: "descTimgad",
-    address: "Office du Tourisme de Batna, Timgad 05000",
+    address: "Office du Tourisme de Batna, Timgad 05001",
     contact: {
       phone: "+213 33 80 12 34",
       email: "info@timgad-festival.dz"

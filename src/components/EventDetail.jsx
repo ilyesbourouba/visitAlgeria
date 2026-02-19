@@ -4,7 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
 import ImageGallery from './ImageGallery';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const EventDetail = ({ event, onBack }) => {
   const { language, isRTL } = useLanguage();

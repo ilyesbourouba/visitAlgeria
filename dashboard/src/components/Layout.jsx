@@ -32,7 +32,15 @@ const discoverItems = [
 ];
 
 const standaloneItems = [
-  { path: '/tour-locations', label: 'Tour Guide', icon: '🗺️' },
+  { path: '/tour-locations', label: 'Virtual Tour', icon: '🗺️' },
+  { path: '/hotels', label: 'Hotels', icon: '🏨' },
+  { path: '/travel-agencies', label: 'Travel Agencies', icon: '✈️' },
+  { path: '/social-media', label: 'Social Media', icon: '📱' },
+];
+
+const libraryItems = [
+  { path: '/library-categories', label: 'Categories', icon: '📂' },
+  { path: '/digital-library', label: 'Files', icon: '📄' },
 ];
 
 const systemItems = [
@@ -48,6 +56,7 @@ const Layout = () => {
   const [isDestinationsExpanded, setIsDestinationsExpanded] = useState(false);
   const [isEventsExpanded, setIsEventsExpanded] = useState(false);
   const [isDiscoverExpanded, setIsDiscoverExpanded] = useState(false);
+  const [isLibraryExpanded, setIsLibraryExpanded] = useState(false);
 
   // Auto-expand if current route is within a group
   useEffect(() => {
@@ -62,6 +71,9 @@ const Layout = () => {
     }
     if (discoverItems.some(item => location.pathname === item.path)) {
       setIsDiscoverExpanded(true);
+    }
+    if (libraryItems.some(item => location.pathname === item.path)) {
+      setIsLibraryExpanded(true);
     }
   }, [location.pathname]);
 
@@ -197,6 +209,30 @@ const Layout = () => {
               {item.label}
             </NavLink>
           ))}
+
+          {/* Digital Library group */}
+          <div className={`sidebar-group ${isLibraryExpanded ? 'expanded' : ''}`}>
+            <button 
+              className="sidebar-group-header" 
+              onClick={() => setIsLibraryExpanded(!isLibraryExpanded)}
+            >
+              <span className="sidebar-icon">📚</span>
+              <span className="group-label">Digital Library</span>
+              <span className="chevron"></span>
+            </button>
+            <div className="sidebar-submenu">
+              {libraryItems.map(item => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) => `sidebar-link submenu-link ${isActive ? 'active' : ''}`}
+                >
+                  <span className="sidebar-icon">{item.icon}</span>
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
 
           {systemItems.map(item => (
             <NavLink

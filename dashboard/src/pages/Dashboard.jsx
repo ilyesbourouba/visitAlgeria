@@ -16,12 +16,15 @@ const Dashboard = () => {
           { key: 'suggestions', url: '/suggestions', label: 'Suggestions', icon: '💡' },
           { key: 'panoramas', url: '/panoramas', label: 'Panoramas', icon: '🌄' },
           { key: 'tourLocations', url: '/tour-locations', label: 'Tour Locations', icon: '🗺️' },
+          { key: 'digitalLibrary', url: '/digital-library', label: 'Digital Library', icon: '📚' },
         ];
 
         const results = {};
         for (const ep of endpoints) {
           const res = await api.get(ep.url);
-          results[ep.key] = { count: res.data.length, label: ep.label, icon: ep.icon };
+          const data = res.data;
+          const count = Array.isArray(data) ? data.length : (data.total ?? (Array.isArray(data.data) ? data.data.length : 0));
+          results[ep.key] = { count, label: ep.label, icon: ep.icon };
         }
         setStats(results);
       } catch (err) {

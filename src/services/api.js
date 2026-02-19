@@ -1,6 +1,6 @@
 // Shared API service for the visitAlgeria public frontend
-const API_BASE = 'http://localhost:5000/api';
-const SERVER_BASE = 'http://localhost:5000';
+const API_BASE = 'http://localhost:5001/api';
+const SERVER_BASE = 'http://localhost:5001';
 
 export async function fetchAPI(endpoint) {
   try {

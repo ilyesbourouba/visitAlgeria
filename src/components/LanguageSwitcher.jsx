@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import './LanguageSwitcher.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 // Built-in languages that use manual translations
 const BUILTIN_LANGUAGES = [
@@ -66,21 +66,17 @@ const LanguageSwitcher = () => {
   }, []);
 
   const triggerGoogleTranslate = (langCode) => {
-    // Use Google Translate cookie approach to change language
-    const frame = document.querySelector('.goog-te-menu-frame');
-    if (frame) {
-      const items = frame.contentDocument?.querySelectorAll('.goog-te-menu2-item span.text');
-      // Google Translate uses its own language names — try to trigger via cookie
-    }
+    if (!langCode) return;
+    const code = langCode.toLowerCase();
     
     // Most reliable: set the googtrans cookie and reload
-    document.cookie = `googtrans=/en/${langCode}; path=/; domain=${window.location.hostname}`;
-    document.cookie = `googtrans=/en/${langCode}; path=/`;
+    document.cookie = `googtrans=/en/${code}; path=/; domain=${window.location.hostname}`;
+    document.cookie = `googtrans=/en/${code}; path=/`;
     
     // Try to use the translate element's API
     const select = document.querySelector('.goog-te-combo');
     if (select) {
-      select.value = langCode;
+      select.value = code;
       select.dispatchEvent(new Event('change'));
     } else {
       // If combo not ready yet, set cookie and reload

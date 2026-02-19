@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './WilayaDetailPage.css';
+import './TourGuide.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'http://localhost:5001';
 
-function WilayaDetailPage({ wilaya, onBack }) {
+function WilayaDetailPage({ wilaya, onBack, onSelectPlace }) {
     const { language } = useLanguage();
     const t = (key) => getTranslation(language, key);
     const isAr = language === 'ar';
@@ -15,12 +16,18 @@ function WilayaDetailPage({ wilaya, onBack }) {
     const [topPlaces, setTopPlaces] = useState([]);
     const [loadingPlaces, setLoadingPlaces] = useState(true);
     const [showFullAbout, setShowFullAbout] = useState(false);
+    const [virtualTours, setVirtualTours] = useState([]);
+    const [loadingTours, setLoadingTours] = useState(true);
+    const [isTourModalOpen, setIsTourModalOpen] = useState(false);
+    const [activeMatterport, setActiveMatterport] = useState(null);
+    const [hotels, setHotels] = useState([]);
+    const [agencies, setAgencies] = useState([]);
+    const [detailItem, setDetailItem] = useState(null);
 
     // Fetch top places for this wilaya from Discovery system
     useEffect(() => {
         const fetchTopPlaces = async () => {
             try {
-                // Fetch places matching the wilaya name (Region)
                 const res = await axios.get(`${API_BASE}/api/discover-system/places?region=${wilaya.name_en}`);
                 setTopPlaces(res.data);
             } catch (err) {
@@ -31,6 +38,56 @@ function WilayaDetailPage({ wilaya, onBack }) {
         };
         fetchTopPlaces();
     }, [wilaya.name_en]);
+
+    // Fetch virtual tours for this wilaya's region
+    useEffect(() => {
+        const fetchVirtualTours = async () => {
+            try {
+                const res = await axios.get(`${API_BASE}/api/tour-locations?active=true`);
+                const tours = Array.isArray(res.data) ? res.data : [];
+                const regionTours = tours.filter(t => t.region && t.region.toLowerCase() === wilaya.name_en.toLowerCase());
+                setVirtualTours(regionTours);
+            } catch (err) {
+                console.error('Error fetching virtual tours:', err);
+            } finally {
+                setLoadingTours(false);
+            }
+        };
+        fetchVirtualTours();
+    }, [wilaya.name_en]);
+
+    // Fetch hotels for this wilaya
+    useEffect(() => {
+        const fetchHotels = async () => {
+            try {
+                const res = await axios.get(`${API_BASE}/api/hotels?active=true&region=${wilaya.name_en}`);
+                setHotels(Array.isArray(res.data) ? res.data : []);
+            } catch (err) {
+                console.error('Error fetching hotels:', err);
+            }
+        };
+        fetchHotels();
+    }, [wilaya.name_en]);
+
+    // Fetch travel agencies for this wilaya
+    useEffect(() => {
+        const fetchAgencies = async () => {
+            try {
+                const res = await axios.get(`${API_BASE}/api/travel-agencies?active=true&region=${wilaya.name_en}`);
+                setAgencies(Array.isArray(res.data) ? res.data : []);
+            } catch (err) {
+                console.error('Error fetching travel agencies:', err);
+            }
+        };
+        fetchAgencies();
+    }, [wilaya.name_en]);
+
+    const renderStars = (count) => {
+        const n = Math.min(5, Math.max(0, Number(count) || 0));
+        return '★'.repeat(n) + '☆'.repeat(5 - n);
+    };
+
+    const getTagText = (tag) => isAr ? (tag.tag_ar || tag.tag_en || '') : (tag.tag_en || tag.tag_ar || '');
 
     const displayName = isAr ? (wilaya.name_ar || wilaya.name_en) : wilaya.name_en;
     const displayAbout = isAr ? (wilaya.about_ar || wilaya.about_en) : wilaya.about_en;
@@ -158,33 +215,43 @@ function WilayaDetailPage({ wilaya, onBack }) {
                     </section>
                 )}
 
-                {/* Image & Video Gallery Section */}
-                {gallery.length > 0 && (
-                    <section className="gallery-section">
-                        <h2>{t('photoGallery') || 'Photo & Video Gallery'}</h2>
-                        <div className="gallery-grid">
-                            {gallery.map((item, index) => (
-                                <div 
-                                    key={index} 
-                                    className="gallery-item"
-                                    onClick={() => setSelectedImageIndex(index)}
-                                >
-                                    {item.type === 'video' ? (
-                                        <div className="video-thumb-container">
-                                            <video src={`${API_BASE}${item.image_url}`} muted />
-                                            <div className="play-overlay">▶</div>
-                                        </div>
-                                    ) : (
-                                        <img src={`${API_BASE}${item.image_url}`} alt={`${displayName} ${index + 1}`} loading="lazy" />
-                                    )}
-                                    <div className="gallery-overlay">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <circle cx="11" cy="11" r="8"></circle>
-                                            <path d="M21 21l-4.35-4.35M11 8v6M8 11h6"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                            ))}
+                {/* Virtual Tours Section — TourGuide-style design */}
+                {virtualTours.length > 0 && (
+                    <section className="wilaya-virtual-tours-section">
+                        <h2>{isAr ? 'جولات افتراضية' : 'Virtual Tours'}</h2>
+                        <div className="tour-guide-page-content" style={{ background: 'transparent' }}>
+                            <div className="tg-locations-container" style={{ padding: '20px 0 40px' }}>
+                                {virtualTours.map((tour, index) => {
+                                    const getTagText = (tag) => isAr ? (tag.tag_ar || tag.tag_en || '') : (tag.tag_en || tag.tag_ar || '');
+                                    return (
+                                        <article key={tour.id} className="tg-location-article" style={{ minHeight: '40vh', marginBottom: '40px' }}>
+                                            <div className="tg-loc-text visible">
+                                                <span className="tg-loc-number">{String(index + 1).padStart(2, '0')}</span>
+                                                <h3>{isAr ? (tour.title_ar || tour.title_en) : tour.title_en}</h3>
+                                                <div className="tg-tags">
+                                                    {(tour.tags || []).map((tag, i) => (
+                                                        <span key={i} className="tg-tag">{getTagText(tag)}</span>
+                                                    ))}
+                                                </div>
+                                                <p>{isAr ? (tour.description_ar || tour.description_en) : tour.description_en}</p>
+                                                {tour.matterport_url && (
+                                                    <button className="tg-explore-link" onClick={() => { setActiveMatterport(tour.matterport_url); setIsTourModalOpen(true); }}>
+                                                        {isAr ? 'ادخل الجولة الافتراضية' : 'Enter Virtual Tour'} {isAr ? '←' : '→'}
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <div className="tg-loc-image-wrapper">
+                                                <img
+                                                    src={tour.image_url ? `${API_BASE}${tour.image_url}` : ''}
+                                                    alt={isAr ? (tour.title_ar || tour.title_en) : tour.title_en}
+                                                    className="tg-loc-image visible loaded"
+                                                    loading="lazy"
+                                                />
+                                            </div>
+                                        </article>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </section>
                 )}
@@ -223,6 +290,92 @@ function WilayaDetailPage({ wilaya, onBack }) {
                         )}
                     </div>
                 </section>
+
+                {/* Image & Video Gallery Section */}
+                {gallery.length > 0 && (
+                    <section className="gallery-section">
+                        <h2>{t('photoGallery') || 'Photo & Video Gallery'}</h2>
+                        <div className="gallery-grid">
+                            {gallery.map((item, index) => (
+                                <div 
+                                    key={index} 
+                                    className="gallery-item"
+                                    onClick={() => setSelectedImageIndex(index)}
+                                >
+                                    {item.type === 'video' ? (
+                                        <div className="video-thumb-container">
+                                            <video src={`${API_BASE}${item.image_url}`} muted />
+                                            <div className="play-overlay">▶</div>
+                                        </div>
+                                    ) : (
+                                        <img src={`${API_BASE}${item.image_url}`} alt={`${displayName} ${index + 1}`} loading="lazy" />
+                                    )}
+                                    <div className="gallery-overlay">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <path d="M21 21l-4.35-4.35M11 8v6M8 11h6"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* Hotels Section */}
+                {hotels.length > 0 && (
+                    <section className="wilaya-listing-section">
+                        <h2>{isAr ? 'فنادق' : 'Hotels'}</h2>
+                        <div className="listing-cards-grid">
+                            {hotels.map(hotel => (
+                                <div key={hotel.id} className="listing-card" onClick={() => setDetailItem({ ...hotel, _type: 'hotel' })}>
+                                    <div className="listing-card-image">
+                                        {hotel.image_url && <img src={`${API_BASE}${hotel.image_url}`} alt={isAr ? hotel.name_ar : hotel.name_en} loading="lazy" />}
+                                        {hotel.stars > 0 && <span className="listing-card-stars">{renderStars(hotel.stars)}</span>}
+                                    </div>
+                                    <div className="listing-card-body">
+                                        <h3 className="listing-card-name">{isAr ? (hotel.name_ar || hotel.name_en) : hotel.name_en}</h3>
+                                        <div className="listing-card-tags">
+                                            {(hotel.tags || []).slice(0, 3).map((tag, i) => (
+                                                <span key={i} className="listing-tag">{getTagText(tag)}</span>
+                                            ))}
+                                        </div>
+                                        {hotel.price > 0 && (
+                                            <div className="listing-card-price">
+                                                <span className="price-amount">DZD {Number(hotel.price).toLocaleString()}</span>
+                                                <span className="price-label">/ {isAr ? 'ليلة' : 'night'}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* Travel Agencies Section */}
+                {agencies.length > 0 && (
+                    <section className="wilaya-listing-section">
+                        <h2>{isAr ? 'وكالات السفر' : 'Travel Agencies'}</h2>
+                        <div className="listing-cards-grid">
+                            {agencies.map(agency => (
+                                <div key={agency.id} className="listing-card" onClick={() => setDetailItem({ ...agency, _type: 'agency' })}>
+                                    <div className="listing-card-image">
+                                        {agency.image_url && <img src={`${API_BASE}${agency.image_url}`} alt={isAr ? agency.name_ar : agency.name_en} loading="lazy" />}
+                                    </div>
+                                    <div className="listing-card-body">
+                                        <h3 className="listing-card-name">{isAr ? (agency.name_ar || agency.name_en) : agency.name_en}</h3>
+                                        <div className="listing-card-tags">
+                                            {(agency.tags || []).slice(0, 3).map((tag, i) => (
+                                                <span key={i} className="listing-tag">{getTagText(tag)}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
             </div>
 
             {/* Lightbox Modal with Navigation */}
@@ -268,6 +421,63 @@ function WilayaDetailPage({ wilaya, onBack }) {
                             {selectedImageIndex + 1} / {gallery.length}
                         </div>
                     )}
+                </div>
+            )}
+
+            {/* Matterport VR Modal */}
+            {isTourModalOpen && activeMatterport && (
+                <div className="tg-modal-overlay" onClick={() => { setIsTourModalOpen(false); setActiveMatterport(null); }}>
+                    <div className="tg-modal-content" onClick={e => e.stopPropagation()}>
+                        <button className="tg-modal-close" onClick={() => { setIsTourModalOpen(false); setActiveMatterport(null); }}>×</button>
+                        <iframe
+                            width="100%"
+                            height="100%"
+                            src={activeMatterport}
+                            frameBorder="0"
+                            allowFullScreen
+                            allow="xr-spatial-tracking"
+                            title="Virtual Tour"
+                        ></iframe>
+                    </div>
+                </div>
+            )}
+
+            {/* Hotel / Agency Detail Popup */}
+            {detailItem && (
+                <div className="listing-detail-overlay" onClick={() => setDetailItem(null)}>
+                    <div className="listing-detail-modal" onClick={e => e.stopPropagation()}>
+                        <button className="listing-detail-close" onClick={() => setDetailItem(null)}>×</button>
+                        {detailItem.image_url && (
+                            <div className="listing-detail-hero">
+                                <img src={`${API_BASE}${detailItem.image_url}`} alt={isAr ? detailItem.name_ar : detailItem.name_en} />
+                            </div>
+                        )}
+                        <div className="listing-detail-body">
+                            <h2>{isAr ? (detailItem.name_ar || detailItem.name_en) : detailItem.name_en}</h2>
+                            {detailItem._type === 'hotel' && detailItem.stars > 0 && (
+                                <div className="listing-detail-stars">{renderStars(detailItem.stars)}</div>
+                            )}
+                            {detailItem._type === 'hotel' && detailItem.price > 0 && (
+                                <div className="listing-detail-price">
+                                    DZD {Number(detailItem.price).toLocaleString()} <span>/ {isAr ? '\u0644\u064a\u0644\u0629' : 'night'}</span>
+                                </div>
+                            )}
+                            <div className="listing-detail-tags">
+                                {(detailItem.tags || []).map((tag, i) => (
+                                    <span key={i} className="listing-tag">{getTagText(tag)}</span>
+                                ))}
+                            </div>
+                            {detailItem.web_link && (
+                                <div className="listing-detail-link-wrapper">
+                                    <span>{isAr ? 'زيارة صفحة الويب : ' : 'Visit web page : '}</span>
+                                    <a href={detailItem.web_link} target="_blank" rel="noopener noreferrer">
+                                        {detailItem.web_link}
+                                    </a>
+                                </div>
+                            )}
+                            <div className="listing-detail-description" dangerouslySetInnerHTML={{ __html: isAr ? (detailItem.description_ar || detailItem.description_en || '') : (detailItem.description_en || '') }} />
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

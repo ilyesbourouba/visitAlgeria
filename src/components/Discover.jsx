@@ -78,12 +78,7 @@ const Discover = ({ onOpenDiscover }) => {
           
           {/* Right: Gallery Card with 4 vertical strips */}
           <div className="bento-card bento-gallery-card" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
-            <div className="gallery-strips">
-              <div className="gallery-strip" style={{ backgroundImage: `url(${getImage(titleCard, galleryImage)})`, backgroundPosition: '0% center' }}></div>
-              <div className="gallery-strip" style={{ backgroundImage: `url(${getImage(titleCard, galleryImage)})`, backgroundPosition: '33% center' }}></div>
-              <div className="gallery-strip" style={{ backgroundImage: `url(${getImage(titleCard, galleryImage)})`, backgroundPosition: '66% center' }}></div>
-              <div className="gallery-strip" style={{ backgroundImage: `url(${getImage(titleCard, galleryImage)})`, backgroundPosition: '100% center' }}></div>
-            </div>
+            <div className="bento-image" style={{ backgroundImage: `url(${getImage(titleCard, galleryImage)})` }}></div>
             <div className="bento-overlay"></div>
             <div className="bento-card-content">
               <h3>{getTitle(titleCard)}</h3>

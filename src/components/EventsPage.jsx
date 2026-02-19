@@ -3,7 +3,7 @@ import './EventsPage.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getTranslation } from '../translations/translations';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const EventsPage = ({ onClose, onSelectEvent }) => {
   const { language, isRTL } = useLanguage();

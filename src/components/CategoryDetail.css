@@ -2,7 +2,7 @@
     position: fixed;
     inset: 0;
     background: var(--bg-color);
-    z-index: 3500;
+    z-index: 100002;
     overflow-y: auto;
     animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -342,7 +342,7 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.95);
-    z-index: 5000;
+    z-index: 5001;
     display: flex;
     align-items: center;
     justify-content: center;

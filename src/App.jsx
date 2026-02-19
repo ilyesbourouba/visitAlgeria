@@ -6,6 +6,7 @@ import TopDestinations from './components/TopDestinations';
 import Suggestions from './components/Suggestions';
 import Panorama from './components/Panorama';
 import TourGuidePage from './components/TourGuide';
+import DigitalLibraryPage from './components/DigitalLibraryPage';
 import UpcomingActivities from './components/UpcomingActivities';
 import UnescoHeritage from './components/UnescoHeritage';
 import InspirationCalendar from './components/InspirationCalendar';
@@ -18,6 +19,7 @@ import DiscoverPage from './components/DiscoverPage';
 import CategoryPage from './components/CategoryPage';
 import CategoryDetail from './components/CategoryDetail';
 import DestinationPage from './components/DestinationPage';
+import SocialSidebar from './components/SocialSidebar';
 import './App.css';
 
 function App() {
@@ -26,6 +28,7 @@ function App() {
   const [showDiscover, setShowDiscover] = useState(false);
   const [showDestinations, setShowDestinations] = useState(false);
   const [showTourGuide, setShowTourGuide] = useState(false);
+  const [showDigitalLibrary, setShowDigitalLibrary] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedWilaya, setSelectedWilaya] = useState(null);
   
@@ -99,12 +102,23 @@ function App() {
     setOpenedFromDiscover(false);
   };
 
+  const handleOpenDigitalLibrary = () => {
+    setShowDigitalLibrary(true);
+    setShowInfo(false);
+    setShowEvents(false);
+    setShowDiscover(false);
+    setShowTourGuide(false);
+    setSelectedEvent(null);
+    setOpenedFromDiscover(false);
+  };
+
   const handleCloseAll = () => {
     setShowInfo(false);
     setShowEvents(false);
     setShowDiscover(false);
     setShowDestinations(false);
     setShowTourGuide(false);
+    setShowDigitalLibrary(false);
     setShowCategory(false);
     setSelectedEvent(null);
     setSelectedCategory(null);
@@ -133,6 +147,7 @@ function App() {
         onDiscoverClick={handleOpenDiscover}
         onDestinationsClick={handleOpenDestinations}
         onTourGuideClick={handleOpenTourGuide}
+        onDigitalLibraryClick={handleOpenDigitalLibrary}
       />
       <Hero />
       <main>
@@ -152,6 +167,7 @@ function App() {
       </main>
       <Footer />
       <BackToTop />
+      <SocialSidebar />
 
       {showInfo && <InfoPage onClose={handleCloseAll} />}
       
@@ -208,6 +224,10 @@ function App() {
 
       {showTourGuide && (
         <TourGuidePage onClose={handleCloseAll} />
+      )}
+
+      {showDigitalLibrary && (
+        <DigitalLibraryPage onClose={handleCloseAll} />
       )}
     </div>
   );

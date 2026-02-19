@@ -626,3 +626,337 @@
 .gallery-item:hover .play-overlay {
     background: rgba(0, 0, 0, 0.5);
 }
+
+/* ═══════════════ Hotels & Travel Agencies ═══════════════ */
+
+.wilaya-listing-section {
+    margin-bottom: 80px;
+}
+
+.listing-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+/* Card */
+.listing-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--secondary-bg, #1c0208);
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.08));
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.listing-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 48px rgba(230, 30, 80, 0.18);
+    border-color: rgba(230, 30, 80, 0.3);
+}
+
+.listing-card-image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.listing-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.listing-card:hover .listing-card-image img {
+    transform: scale(1.08);
+}
+
+/* Star Badge on image */
+.listing-card-stars {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+    border-radius: 8px;
+    color: #f5c518;
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+
+/* Card Body */
+.listing-card-body {
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.listing-card-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* Tags (shared between card and modal) */
+.listing-card-tags,
+.listing-detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.listing-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(230, 30, 80, 0.12);
+    border: 1px solid rgba(230, 30, 80, 0.25);
+    border-radius: 20px;
+    color: var(--accent-color, #e61e50);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: capitalize;
+}
+
+/* Price Badge */
+.listing-card-price {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-top: auto;
+}
+
+.price-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-color, #e61e50);
+}
+
+.price-label {
+    font-size: 12px;
+    color: var(--text-secondary, #999);
+}
+
+/* ═══════════ Detail Popup Overlay ═══════════ */
+
+.listing-detail-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200001;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    animation: listingFadeIn 0.3s ease;
+}
+
+@keyframes listingFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.listing-detail-modal {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    max-height: 85vh;
+    background: var(--secondary-bg, #1c0208);
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+    border-radius: 20px;
+    overflow: hidden;
+    overflow-y: auto;
+    animation: listingSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes listingSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(32px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.listing-detail-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.listing-detail-close:hover {
+    background: var(--accent-color, #e61e50);
+}
+
+.listing-detail-hero {
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+}
+
+.listing-detail-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.listing-detail-body {
+    padding: 28px 28px 32px;
+}
+
+.listing-detail-body h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary, #fff);
+    margin: 0 0 12px 0;
+    padding-bottom: 0;
+}
+
+.listing-detail-body h2::after {
+    display: none;
+}
+
+.listing-detail-stars {
+    color: #f5c518;
+    font-size: 20px;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+.listing-detail-price {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-color, #e61e50);
+    margin-bottom: 16px;
+}
+
+.listing-detail-price span {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-secondary, #999);
+}
+
+.listing-detail-tags {
+    margin-bottom: 24px;
+}
+
+/* Web Link Wrapper */
+.listing-detail-link-wrapper {
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: rgba(var(--accent-color-rgb, 230, 30, 80), 0.05);
+    border-left: 3px solid var(--accent-color, #e61e50);
+    border-radius: 4px 8px 8px 4px;
+    font-size: 14px;
+}
+
+.listing-detail-link-wrapper span {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.listing-detail-link-wrapper a {
+    color: var(--accent-color, #e61e50);
+    font-weight: 500;
+    word-break: break-all;
+    text-decoration: underline;
+    margin-left: 4px;
+}
+
+/* Rich text description */
+.listing-detail-description {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-secondary, #ccc);
+    word-break: break-word;
+    /* Ensure no white background from pasted HTML messes withrounded corners */
+    background: transparent !important;
+}
+
+.listing-detail-description * {
+    background-color: transparent !important;
+}
+
+.listing-detail-description h1,
+.listing-detail-description h2,
+.listing-detail-description h3 {
+    color: var(--text-primary, #fff);
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+
+.listing-detail-description p {
+    margin-bottom: 1.2em;
+}
+
+.listing-detail-description ul,
+.listing-detail-description ol {
+    padding-left: 20px;
+    margin-bottom: 16px;
+}
+
+.listing-detail-description li {
+    margin-bottom: 8px;
+}
+
+.listing-detail-description img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin: 16px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .listing-cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .listing-detail-overlay {
+        padding: 16px;
+    }
+
+    .listing-detail-modal {
+        max-height: 90vh;
+        border-radius: 16px;
+    }
+
+    .listing-detail-hero {
+        height: 200px;
+    }
+
+    .listing-detail-body {
+        padding: 20px;
+    }
+}
