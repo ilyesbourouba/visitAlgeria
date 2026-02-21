@@ -17,12 +17,13 @@ const fallbackDestinations = [
 
 const TopDestinations = ({ onOpenDestinations, onSelectDestination }) => {
   const carouselRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [isMouseDown, setIsMouseDown] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [apiData, setApiData] = useState(null);
+  const hasDraggedRef = useRef(false);
   const { language } = useLanguage();
   const t = (key) => getTranslation(language, key);
 
@@ -63,24 +64,29 @@ const TopDestinations = ({ onOpenDestinations, onSelectDestination }) => {
   }, []);
 
   const handleMouseDown = (e) => {
-    setIsDragging(true);
+    setIsMouseDown(true);
+    hasDraggedRef.current = false;
     setStartX(e.pageX - carouselRef.current.offsetLeft);
     setScrollLeft(carouselRef.current.scrollLeft);
   };
 
   const handleMouseMove = (e) => {
-    if (!isDragging) return;
+    if (!isMouseDown) return;
     e.preventDefault();
     const x = e.pageX - carouselRef.current.offsetLeft;
     const walk = (x - startX) * 1.5;
+    if (Math.abs(x - startX) > 5) {
+      hasDraggedRef.current = true;
+    }
     carouselRef.current.scrollLeft = scrollLeft - walk;
   };
 
   const handleMouseUp = () => {
-    setIsDragging(false);
+    setIsMouseDown(false);
   };
 
   const handleTouchStart = (e) => {
+    hasDraggedRef.current = false;
     setStartX(e.touches[0].pageX - carouselRef.current.offsetLeft);
     setScrollLeft(carouselRef.current.scrollLeft);
   };
@@ -88,6 +94,9 @@ const TopDestinations = ({ onOpenDestinations, onSelectDestination }) => {
   const handleTouchMove = (e) => {
     const x = e.touches[0].pageX - carouselRef.current.offsetLeft;
     const walk = (x - startX) * 1.5;
+    if (Math.abs(x - startX) > 5) {
+      hasDraggedRef.current = true;
+    }
     carouselRef.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -100,7 +109,7 @@ const TopDestinations = ({ onOpenDestinations, onSelectDestination }) => {
   };
 
   const handleCardClick = (dest) => {
-    if (isDragging) return; // Don't navigate if user was dragging
+    if (hasDraggedRef.current) return; // Don't navigate if user was actually dragging
     if (onSelectDestination && dest.rawData) {
       onSelectDestination(dest.rawData);
     } else if (onOpenDestinations) {
@@ -146,7 +155,7 @@ const TopDestinations = ({ onOpenDestinations, onSelectDestination }) => {
       </div>
 
       <div 
-        className={`destinations-carousel ${isDragging ? 'dragging' : ''}`}
+        className={`destinations-carousel ${isMouseDown ? 'dragging' : ''}`}
         ref={carouselRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}

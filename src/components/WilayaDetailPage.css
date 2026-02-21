@@ -100,6 +100,12 @@
     font-size: 13px;
 }
 
+[data-theme="light"] .highlight-tag {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
+}
+
 /* Main Content */
 .wilaya-content {
     max-width: 1200px;

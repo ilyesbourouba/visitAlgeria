@@ -16,12 +16,15 @@ const fallbackCategories = [
   { id: 6, key: 'saharaDesert', video: heroVideo },
 ];
 
-const Hero = () => {
+const Hero = ({ onSelectDestination }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [slides, setSlides] = useState(null); // API data
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupSlide, setPopupSlide] = useState(null);
+  const [destinations, setDestinations] = useState([]);
   const videoRefs = useRef([]);
   const { language } = useLanguage();
   const t = (key) => getTranslation(language, key);
@@ -35,15 +38,29 @@ const Hero = () => {
     });
   }, []);
 
+  // Fetch destinations for wilaya cards
+  useEffect(() => {
+    fetchAPI('/destinations').then(data => {
+      if (data && data.length > 0) {
+        setDestinations(data.filter(d => d.is_active));
+      }
+    });
+  }, []);
+
   // Determine data source: API slides or fallback
   const categories = slides
     ? slides.map((s, i) => ({
         id: s.id || i,
-        key: null, // won't use translation key
+        key: null,
         title: localize(s, 'title', language),
+        subtitle: localize(s, 'subtitle', language),
+        description: localize(s, 'description', language),
+        bgImage: s.bg_image_url ? mediaUrl(s.bg_image_url) : null,
+        wilayaIds: s.wilaya_ids ? s.wilaya_ids.split(',').map(id => Number(id.trim())) : [],
         video: s.video_url ? mediaUrl(s.video_url) : heroVideo,
+        rawSlide: s,
       }))
-    : fallbackCategories.map(c => ({ ...c, title: t(c.key) }));
+    : fallbackCategories.map(c => ({ ...c, title: t(c.key), subtitle: '', wilayaIds: [] }));
 
   const getTitle = (cat) => cat.title || t(cat.key);
 
@@ -90,6 +107,24 @@ const Hero = () => {
     }
   };
 
+  const handleSubtitleClick = (slide) => {
+    if (slide.subtitle || slide.description || slide.wilayaIds?.length > 0) {
+      setPopupSlide(slide);
+      setShowPopup(true);
+    }
+  };
+
+  const handleWilayaCardClick = (wilaya) => {
+    setShowPopup(false);
+    if (onSelectDestination) {
+      onSelectDestination(wilaya);
+    }
+  };
+
+  const getAffiliatedWilayas = (wilayaIds) => {
+    return destinations.filter(d => wilayaIds.includes(d.id));
+  };
+
   // Touch swipe handlers
   const handleTouchStart = (e) => {
     setTouchStart(e.touches[0].clientX);
@@ -113,11 +148,16 @@ const Hero = () => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowLeft') goToPrev();
       if (e.key === 'ArrowRight') goToNext();
-      if (e.key === 'Escape') setShowGrid(false);
+      if (e.key === 'Escape') {
+        setShowGrid(false);
+        setShowPopup(false);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeIndex]);
+
+  const currentSlide = categories[activeIndex];
 
   return (
     <section 
@@ -145,13 +185,24 @@ const Hero = () => {
       {/* Overlay */}
       <div className="hero-overlay"></div>
 
-
       {/* Hero Content */}
       <div className="hero-content">
         <h1 className="hero-title" key={activeIndex}>
-          {getTitle(categories[activeIndex])}
+          {getTitle(currentSlide)}
         </h1>
-        <p className="hero-subtitle">{t('discoverBeauty')}</p>
+        {currentSlide.subtitle ? (
+          <button
+            className="hero-subtitle-link"
+            onClick={() => handleSubtitleClick(currentSlide)}
+          >
+            {currentSlide.subtitle}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        ) : (
+          <p className="hero-subtitle">{t('discoverBeauty')}</p>
+        )}
       </div>
 
       {/* Bottom Carousel Controls */}
@@ -245,6 +296,78 @@ const Hero = () => {
           </div>
         </div>
       </div>
+
+      {/* Hero Slide Popup */}
+      {showPopup && popupSlide && (
+        <div className="hero-slide-popup-overlay" onClick={() => setShowPopup(false)}>
+          <div className="hero-slide-popup" onClick={e => e.stopPropagation()}>
+            {/* Close Button */}
+            <button className="hero-popup-close" onClick={() => setShowPopup(false)}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+
+            {/* Header with Background Image */}
+            <div
+              className="hero-popup-header"
+              style={{
+                backgroundImage: popupSlide.bgImage
+                  ? `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url(${popupSlide.bgImage})`
+                  : 'linear-gradient(135deg, #1a0a10, #2d1f22)'
+              }}
+            >
+              <h2 className="hero-popup-title">{getTitle(popupSlide)}</h2>
+              {popupSlide.subtitle && (
+                <p className="hero-popup-subtitle">{popupSlide.subtitle}</p>
+              )}
+            </div>
+
+            {/* Scrollable Body */}
+            <div className="hero-popup-body">
+              {/* Rich Text Description */}
+              {popupSlide.description && (
+                <div
+                  className="hero-popup-description"
+                  dangerouslySetInnerHTML={{ __html: popupSlide.description }}
+                />
+              )}
+
+              {/* Affiliated Wilayas */}
+              {popupSlide.wilayaIds && popupSlide.wilayaIds.length > 0 && (
+                <div className="hero-popup-wilayas">
+                  <h3>{language === 'ar' ? 'الولايات المرتبطة' : 'Related Destinations'}</h3>
+                  <div className="hero-popup-wilaya-grid">
+                    {getAffiliatedWilayas(popupSlide.wilayaIds).map(wilaya => (
+                      <div
+                        key={wilaya.id}
+                        className="hero-popup-wilaya-card"
+                        onClick={() => handleWilayaCardClick(wilaya)}
+                      >
+                        <div
+                          className="wilaya-card-image"
+                          style={{
+                            backgroundImage: wilaya.background_image
+                              ? `url(${mediaUrl(wilaya.background_image)})`
+                              : 'linear-gradient(135deg, #2d1f22, #4a3040)'
+                          }}
+                        >
+                          <div className="wilaya-card-overlay">
+                            <span className="wilaya-card-name">
+                              {localize(wilaya, 'name', language)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

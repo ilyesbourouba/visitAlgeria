@@ -81,8 +81,12 @@ const CrudPage = ({ title, endpoint, columns, formFields, transformBeforeSave })
     const data = {};
     formFields.forEach(f => {
       if (f.type === 'multiselect') {
-        // Convert array of objects (e.g. [{id:1, name_en:...}]) to array of IDs
-        const arr = Array.isArray(item[f.key]) ? item[f.key] : [];
+        // Support both array values and comma-separated strings
+        let arr = item[f.key];
+        if (typeof arr === 'string' && arr.trim()) {
+          arr = arr.split(',').map(v => { const n = Number(v.trim()); return isNaN(n) ? v.trim() : n; });
+        }
+        arr = Array.isArray(arr) ? arr : [];
         data[f.key] = arr.map(v => typeof v === 'object' ? v.id : v);
       } else if (f.type === 'gallery' || f.type === 'tags') {
         data[f.key] = Array.isArray(item[f.key]) ? item[f.key] : [];

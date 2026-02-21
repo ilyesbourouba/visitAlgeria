@@ -149,7 +149,7 @@ function App() {
         onTourGuideClick={handleOpenTourGuide}
         onDigitalLibraryClick={handleOpenDigitalLibrary}
       />
-      <Hero />
+      <Hero onSelectDestination={handleSelectDestination} />
       <main>
         <Discover onOpenDiscover={handleOpenDiscover} />
         <TopDestinations

@@ -284,6 +284,7 @@ export const translations = {
 
     // Wilaya Detail Page
     about: 'About',
+    aboutWilaya: 'About Wilaya',
     quickFacts: 'Quick Facts',
     population: 'Population',
     area: 'Area',
@@ -584,7 +585,7 @@ export const translations = {
     backToMap: 'العودة للخريطة',
 
     // Wilaya Detail Page
-    aboutWilaya: 'حول',
+    aboutWilaya: 'حول ولاية',
     quickFacts: 'حقائق سريعة',
     population: 'السكان',
     area: 'المساحة',

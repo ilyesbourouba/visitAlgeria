@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
 
+// These prefixes are managed on other dashboard pages or are unused
+const HIDDEN_PREFIXES = ['social_', 'tg_hero_', 'unesco_', 'hero_subtitle_'];
+
 const SettingsPage = () => {
   const [settings, setSettings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +15,10 @@ const SettingsPage = () => {
   const fetchSettings = async () => {
     try {
       const res = await api.get('/settings/list');
-      setSettings(res.data);
+      const filtered = res.data.filter(
+        s => !HIDDEN_PREFIXES.some(prefix => s.setting_key.startsWith(prefix))
+      );
+      setSettings(filtered);
     } catch (err) {
       console.error(err);
     } finally {

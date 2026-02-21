@@ -118,9 +118,9 @@ const DiscoverPage = ({ onClose, onOpenCategory }) => {
                     <div className="art-card-info">
                       <h3>{localize(place, 'name', language)}</h3>
                       {place.categories && place.categories.length > 0 && (
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                        <div className="discover-art-tags">
                           {place.categories.map((cat, idx) => (
-                            <span key={idx} style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.15)', padding: '2px 8px', borderRadius: '12px', color: 'rgba(255,255,255,0.8)' }}>
+                            <span key={idx} className="discover-art-tag">
                               {language === 'ar' ? (cat.name_ar || cat.name_en) : cat.name_en}
                             </span>
                           ))}

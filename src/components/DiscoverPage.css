@@ -172,6 +172,27 @@
     border-radius: 2px;
 }
 
+.discover-art-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.discover-art-tag {
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2px 8px;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .discover-art-tag {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-secondary);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 .art-card {
     cursor: pointer;
 }
