@@ -45,7 +45,7 @@ const libraryItems = [
 
 const systemItems = [
   { path: '/languages', label: 'Languages', icon: '🌐' },
-  { path: '/settings', label: 'Settings', icon: '⚙️' },
+  { path: '/settings', label: 'Footer', icon: '🦶' },
 ];
 
 const Layout = () => {

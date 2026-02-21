@@ -165,7 +165,7 @@ function App() {
         <Panorama />
         <InspirationCalendar />
       </main>
-      <Footer />
+      <Footer onOpenInfo={handleOpenInfo} onSelectDestination={handleSelectDestination} onOpenDiscover={handleOpenDiscover} />
       <BackToTop />
       <SocialSidebar />
 
