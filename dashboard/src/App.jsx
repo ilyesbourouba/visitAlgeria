@@ -26,6 +26,8 @@ import TravelAgencies from './pages/TravelAgencies';
 import SocialMedia from './pages/SocialMedia';
 import './App.css';
 
+const basename = import.meta.env.PROD ? '/dashboard' : '/';
+
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div className="loading">Loading...</div>;
@@ -36,7 +38,7 @@ const ProtectedRoute = ({ children }) => {
 const App = () => {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={
