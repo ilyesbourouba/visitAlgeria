@@ -1,6 +1,6 @@
 // Shared API service for the visitAlgeria public frontend
-const API_BASE = 'http://localhost:5001/api';
-const SERVER_BASE = 'http://localhost:5001';
+const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
+const SERVER_BASE = import.meta.env.VITE_API_URL;
 
 export async function fetchAPI(endpoint) {
   try {

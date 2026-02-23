@@ -3,7 +3,7 @@ import api from '../api';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
-const API_BASE = 'http://localhost:5001';
+const API_BASE = import.meta.env.VITE_API_URL;
 
 /**
  * Generic CRUD page with:

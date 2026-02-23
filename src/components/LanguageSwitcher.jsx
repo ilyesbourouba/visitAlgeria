@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import './LanguageSwitcher.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+const API_BASE = import.meta.env.VITE_API_URL;
 
 // Built-in languages that use manual translations
 const BUILTIN_LANGUAGES = [

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './SocialSidebar.css';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:5001';
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const PLATFORMS = [
   {
