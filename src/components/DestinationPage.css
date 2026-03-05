@@ -281,6 +281,7 @@
         right: 10px;
     }
 }
+
 /* Algeria SVG Map Styles */
 .algeria-svg-wrapper {
     position: relative;
@@ -304,15 +305,17 @@
 }
 
 .wilaya-path {
-    fill: rgba(255, 255, 255, 0.05); /* Default fill for wilayas with no data */
+    fill: rgba(255, 255, 255, 0.05);
+    /* Default fill for wilayas with no data */
     stroke: rgba(255, 255, 255, 0.2);
-    stroke-width: 1.5;
-    transition: fill 0.3s ease, stroke 0.3s ease;
+    stroke-width: 0.5px;
+    transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
     cursor: default;
 }
 
 .wilaya-path.has-data {
-    fill: rgba(255, 255, 255, 0.08); /* Slightly visible base */
+    fill: rgba(255, 255, 255, 0.08);
+    /* Slightly visible base */
     cursor: pointer;
 }
 
@@ -320,14 +323,34 @@
     fill: var(--accent-color);
     opacity: 0.4;
     stroke: rgba(255, 255, 255, 0.8);
-    stroke-width: 2;
+    stroke-width: 1px;
 }
 
 .wilaya-path.selected {
     fill: var(--accent-color);
     opacity: 1;
     stroke: #ffffff;
-    stroke-width: 2.5;
+    stroke-width: 1.5px;
+}
+
+/* Light Theme Overrides for Map Paths */
+[data-theme="light"] .wilaya-path {
+    fill: rgba(45, 31, 34, 0.05);
+    stroke: rgba(45, 31, 34, 0.2);
+}
+
+[data-theme="light"] .wilaya-path.has-data {
+    fill: rgba(45, 31, 34, 0.08);
+}
+
+[data-theme="light"] .wilaya-path.has-data:hover {
+    fill: var(--accent-color);
+    stroke: rgba(45, 31, 34, 0.7);
+}
+
+[data-theme="light"] .wilaya-path.selected {
+    fill: var(--accent-color);
+    stroke: rgba(45, 31, 34, 0.8);
 }
 
 /* Map Tooltip */
@@ -345,6 +368,12 @@
     align-items: center;
     gap: 8px;
     backdrop-filter: blur(10px);
+}
+
+.selected-tooltip {
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 0 20px rgba(230, 30, 80, 0.4);
+    z-index: 999;
 }
 
 .tooltip-num {

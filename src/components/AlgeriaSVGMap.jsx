@@ -16,6 +16,7 @@ const AlgeriaSVGMap = ({ wilayas, selectedWilaya, onWilayaClick }) => {
     const { language } = useLanguage();
     const [hoveredWilaya, setHoveredWilaya] = useState(null);
     const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+    const [selectedCenter, setSelectedCenter] = useState(null);
     
     // Pan and Zoom state
     const [viewBox, setViewBox] = useState({ x: 0, y: 0, w: 1000, h: 1000 });
@@ -40,6 +41,12 @@ const AlgeriaSVGMap = ({ wilayas, selectedWilaya, onWilayaClick }) => {
             if (pathEl) {
                 const bbox = pathEl.getBBox();
                 
+                // Calculate center for popup using bounding box
+                setSelectedCenter({
+                    x: bbox.x + bbox.width / 2,
+                    y: bbox.y + bbox.height / 2
+                });
+                
                 // Add some padding around the wilaya (e.g., 20%)
                 const padding = 0;
                 
@@ -57,6 +64,8 @@ const AlgeriaSVGMap = ({ wilayas, selectedWilaya, onWilayaClick }) => {
                     h: size 
                 });
             }
+        } else {
+            setSelectedCenter(null);
         }
     }, [selectedWilaya]);
 
@@ -173,6 +182,25 @@ const AlgeriaSVGMap = ({ wilayas, selectedWilaya, onWilayaClick }) => {
         setViewBox({ x: 0, y: 0, w: 1000, h: 1000 });
     };
 
+    // Calculate DOM position for the selected wilaya's static tooltip
+    let selectedTooltipPos = null;
+    if (selectedWilaya && selectedCenter && containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const { width, height } = rect;
+        const scale = Math.min(width / viewBox.w, height / viewBox.h);
+        
+        const actualW = viewBox.w * scale;
+        const actualH = viewBox.h * scale;
+        
+        const offsetX = (width - actualW) / 2;
+        const offsetY = (height - actualH) / 2;
+        
+        selectedTooltipPos = {
+            x: offsetX + (selectedCenter.x - viewBox.x) * scale,
+            y: offsetY + (selectedCenter.y - viewBox.y) * scale
+        };
+    }
+
     return (
         <div 
             className="algeria-svg-wrapper" 
@@ -213,6 +241,7 @@ const AlgeriaSVGMap = ({ wilayas, selectedWilaya, onWilayaClick }) => {
                                 key={dzCode}
                                 d={pathData}
                                 className={className}
+                                vectorEffect="non-scaling-stroke"
                                 onMouseEnter={(e) => wilayaObj ? handlePathMouseEnter(wilayaObj, e) : null}
                                 onMouseLeave={wilayaObj ? handlePathMouseLeave : null}
                                 onClick={() => wilayaObj ? onWilayaClick(wilayaObj) : null}
@@ -222,7 +251,7 @@ const AlgeriaSVGMap = ({ wilayas, selectedWilaya, onWilayaClick }) => {
                 </g>
             </svg>
             
-            {hoveredWilaya && (
+            {hoveredWilaya && (!selectedWilaya || hoveredWilaya.code !== selectedWilaya.code) && (
                 <div 
                     className="map-tooltip" 
                     style={{ 
@@ -233,6 +262,25 @@ const AlgeriaSVGMap = ({ wilayas, selectedWilaya, onWilayaClick }) => {
                     <div className="tooltip-num">{hoveredWilaya.code}</div>
                     <div className="tooltip-name">
                         {language === 'ar' ? hoveredWilaya.nameAr : hoveredWilaya.name}
+                    </div>
+                </div>
+            )}
+            
+            {selectedWilaya && selectedTooltipPos && (
+                <div 
+                    className="map-tooltip selected-tooltip" 
+                    style={{ 
+                        left: `${selectedTooltipPos.x}px`, 
+                        top: `${selectedTooltipPos.y}px`,
+                        transform: 'translate(-50%, -100%)', // Center directly over the coordinate
+                        marginTop: '-10px', // Extra offset to not cover the exact center point
+                        opacity: hoveredWilaya && hoveredWilaya.code !== selectedWilaya.code ? 0.4 : 1, // Dim if hovering another
+                        transition: 'opacity 0.2s ease, left 0.1s linear, top 0.1s linear'
+                    }}
+                >
+                    <div className="tooltip-num">{selectedWilaya.code}</div>
+                    <div className="tooltip-name">
+                        {language === 'ar' ? selectedWilaya.nameAr : selectedWilaya.name}
                     </div>
                 </div>
             )}
