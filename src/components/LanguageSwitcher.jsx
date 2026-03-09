@@ -14,7 +14,20 @@ const LanguageSwitcher = () => {
   const { language, setLanguage } = useLanguage();
   const [extraLanguages, setExtraLanguages] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTranslation, setActiveTranslation] = useState(null);
+  const [activeTranslation, setActiveTranslation] = useState(() => {
+    // Check if there's a Google Translate cookie
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(/(^|;) ?googtrans=([^;]*)(;|$)/);
+      if (match && match[2]) {
+        const parts = decodeURIComponent(match[2]).split('/');
+        if (parts.length === 3 && parts[1] === 'en') {
+          const code = parts[2].toLowerCase();
+          return code === 'zh-cn' ? 'zh' : code;
+        }
+      }
+    }
+    return null;
+  });
   const dropdownRef = useRef(null);
 
   // Fetch admin-configured languages
@@ -67,7 +80,10 @@ const LanguageSwitcher = () => {
 
   const triggerGoogleTranslate = (langCode) => {
     if (!langCode) return;
-    const code = langCode.toLowerCase();
+    let code = langCode.toLowerCase();
+    
+    // Google Translate expects zh-CN for Chinese
+    if (code === 'zh') code = 'zh-CN';
     
     // Most reliable: set the googtrans cookie and reload
     document.cookie = `googtrans=/en/${code}; path=/; domain=${window.location.hostname}`;
@@ -85,10 +101,26 @@ const LanguageSwitcher = () => {
   };
 
   const removeGoogleTranslate = () => {
-    // Remove googtrans cookies
-    document.cookie = 'googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-    document.cookie = `googtrans=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+    // Generate all domain permutations to wipe
+    const host = window.location.hostname;
+    const parts = host.split('.');
     
+    // Test base host, .host, and parent domains (e.g. .streamsystem.com)
+    let domains = [
+      '',
+      host,
+      '.' + host
+    ];
+    if (parts.length > 2) {
+      domains.push('.' + parts.slice(1).join('.'));
+      domains.push(parts.slice(1).join('.'));
+    }
+
+    domains.forEach(d => {
+      const domainAttr = d ? `; domain=${d}` : '';
+      document.cookie = `googtrans=; path=/${domainAttr}; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+    });
+
     // Try to restore original
     const select = document.querySelector('.goog-te-combo');
     if (select) {
@@ -100,6 +132,14 @@ const LanguageSwitcher = () => {
     const bar = document.querySelector('.skiptranslate');
     if (bar) bar.style.display = 'none';
     document.body.style.top = '0px';
+
+    // Often Google Translate modifies the DOM so heavily that simply unsetting the select/cookie 
+    // isn't enough to visually revert to pure English immediately. Reloading ensures a clean slate.
+    if (activeTranslation) {
+      setTimeout(() => {
+        window.location.reload();
+      }, 50);
+    }
   };
 
   const handleSelectLanguage = (lang) => {
@@ -107,9 +147,9 @@ const LanguageSwitcher = () => {
 
     if (lang.code === 'en' || lang.code === 'ar') {
       // Built-in language — use manual translations
-      removeGoogleTranslate();
-      setActiveTranslation(null);
       setLanguage(lang.code);
+      setActiveTranslation(null);
+      removeGoogleTranslate();
     } else {
       // Extra language — ensure base is English first, then translate
       if (language !== 'en') {
@@ -128,7 +168,7 @@ const LanguageSwitcher = () => {
   const allLanguages = [...BUILTIN_LANGUAGES, ...extraLanguages];
 
   return (
-    <div className="language-switcher-wrapper" ref={dropdownRef}>
+    <div className="language-switcher-wrapper notranslate" translate="no" ref={dropdownRef}>
       <button
         className="language-switcher"
         onClick={() => setIsOpen(!isOpen)}
